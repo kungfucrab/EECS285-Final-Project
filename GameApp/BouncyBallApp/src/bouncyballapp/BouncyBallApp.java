@@ -17,36 +17,44 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
+import javafx.scene.paint.*;
+import javafx.scene.canvas.*;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import bouncyballapp.Crate;
+import bouncyballapp.BouncyText;
+import bouncyballapp.WaveText;
 
 public class BouncyBallApp extends Application {
-
-  Group root = new Group(); //Create a group for holding all objects on the screen
-  Scene scene = new Scene(root, Utility.WIDTH, Utility.HEIGHT);
   
-  ArrayList<BuildingRect> balls = new ArrayList<BuildingRect>();
+  ArrayList<PhysicalGameObject> pGameObjects = new ArrayList<PhysicalGameObject>();
 
+  float text_size = 0;
+  
   @Override
   public void start(Stage primaryStage) {
-
+    
+    Utility.root = new Group();
+    Utility.scene = new Scene(Utility.root, Utility.WIDTH, Utility.HEIGHT);
+    
+    Utility.canvas = new Canvas(Utility.WIDTH, Utility.HEIGHT);
+    Utility.gc = Utility.canvas.getGraphicsContext2D();
+    
+    Utility.root.getChildren().add(Utility.canvas);
+    
+    // Temporary menu texts...
+    WaveText wt = new WaveText("Structural Showdown", 100, 100);
+    BouncyText btnArcade = new BouncyText("Arcade Mode", 100, 200, 40);
+    /*BouncyText btnGallery = new BouncyText("Gallery", 100, 250, 20);
+    BouncyText btnCredits = new BouncyText("Credits", 100, 300, 20);
+    BouncyText btnQuit = new BouncyText("Quit", 100, 350, 20);*/
+    
     primaryStage.setTitle("Bouncy Ball");
     primaryStage.setFullScreen(false);
     primaryStage.setResizable(false);
-    
 
-    //create ball   
-    //balls.add(new BouncyBall(45, 90, Utility.BALL_RADIUS, Color.RED));
-
-    //Add ground to the application, this is where balls will land
     Utility.addGround(100, 20);
-    Rectangle r = new Rectangle();
-    r.setX(0);
-    r.setY(Utility.toPixelPosY(10));
-    r.setWidth(Utility.WIDTH);
-    r.setHeight(100);
-    r.setArcWidth(20);
-    r.setArcHeight(20);
 
     //Add left and right walls so balls will not move outside the viewing area.
     Utility.addWall(0,100,1,100); //Left wall
@@ -58,28 +66,15 @@ public class BouncyBallApp extends Application {
     Duration duration = Duration.seconds(1.0/60.0); // Set duration for frame.
 
     
-    scene.addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
+    Utility.scene.addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
       @Override
       public void handle(MouseEvent mouseEvent) {
         if(Utility.toPosY((float)mouseEvent.getY()) > 10)
         {
-          for(int i=0; i<1; i++)
-          {
-            BuildingRect newRect = new BuildingRect(Utility.toPosX((float)mouseEvent.getX()), Utility.toPosY((float)mouseEvent.getY()), 10, 20, Color.BLUE);
-            //BouncyBall newBall = new BouncyBall(Utility.toPosX((float)mouseEvent.getX()), Utility.toPosY((float)mouseEvent.getY()), Utility.BALL_RADIUS, Color.RED);
-            System.out.println(Utility.toPosX((float)mouseEvent.getX()) + " " + Utility.toPosY((float)mouseEvent.getY()));
-            root.getChildren().add(newRect.node);
-            System.out.println("mouse click: "+mouseEvent.getSource());
-
-            Body body = (Body)newRect.node.getUserData();
-            float xpos = Utility.toPixelPosX(body.getPosition().x);
-            float ypos = Utility.toPixelPosY(body.getPosition().y);
-
-            newRect.node.setLayoutX(xpos);
-            newRect.node.setLayoutY(ypos);
-
-            balls.add(newRect);
-          }
+          PhysicalGameObject newPGObject;
+          newPGObject = new Crate(Utility.toPosX((float)mouseEvent.getX()), Utility.toPosY((float)mouseEvent.getY()), 50, 50);
+          
+          pGameObjects.add(newPGObject);
         }
       }
     });
@@ -88,22 +83,16 @@ public class BouncyBallApp extends Application {
       public void handle(ActionEvent t) {
         //Create time step. Set Iteration count 8 for velocity and 3 for positions
         Utility.world.step(1.0f/60.f, 8, 3); 
-
-        for(BuildingRect bally : balls)
+        
+        Utility.gc.clearRect(0, 0, Utility.WIDTH, Utility.HEIGHT);
+        SpecialText.updateSystem();
+        
+        for(PhysicalGameObject pgObject : pGameObjects)
         {
-          Body b = (Body)bally.node.getUserData();;
-
-          //Move balls to the new position computed by JBox2D
-          //Body body = (Body)ball.node.getUserData();
-          float xpos = Utility.toPixelPosX(b.getPosition().x);
-          float ypos = Utility.toPixelPosY(b.getPosition().y);
-          bally.node.setLayoutX(xpos);
-          bally.node.setLayoutY(ypos);
-          bally.node.setRotate(-180*b.getAngle()/((float) Math.PI));
+          pgObject.update();
         }
       }
     };
-
 
     /**
      * Set ActionEvent and duration to the KeyFrame. 
@@ -125,18 +114,10 @@ public class BouncyBallApp extends Application {
       }
     });
 
-    root.getChildren().add(r);
-    root.getChildren().add(btn);
-    for(BuildingRect b : balls)
-    {
-      root.getChildren().add(b.node);
-    }
-    primaryStage.setScene(scene);
+    Utility.root.getChildren().add(btn);
+    primaryStage.setScene(Utility.scene);
     primaryStage.show();
-
-    
   }
-
 
   public static void main(String[] args) {
     launch(args);

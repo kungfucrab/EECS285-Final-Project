@@ -1,5 +1,10 @@
 package bouncyballapp;
 
+import javafx.scene.Group;
+import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
+
 import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.BodyDef;
@@ -20,6 +25,12 @@ public class Utility
    
   //Ball radius in pixel
   public static final int BALL_RADIUS = 8;
+  
+  static Group root;
+  static Scene scene;
+  
+  public static Canvas canvas;
+  public static GraphicsContext gc;
   
   //This method adds a ground to the screen. 
   public static void addGround(float width, float height){

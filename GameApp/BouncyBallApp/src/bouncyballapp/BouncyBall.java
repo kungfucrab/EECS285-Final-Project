@@ -25,7 +25,6 @@ public class BouncyBall{
     //Ball radius in pixels
     private int radius;
      
-    
     private Color color;
     public BouncyBall(float posX, float posY, int radius, Color color){
         this.posX = posX;
