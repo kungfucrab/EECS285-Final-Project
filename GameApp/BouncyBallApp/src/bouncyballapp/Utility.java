@@ -15,7 +15,7 @@ public class Utility
   public static final World world = new World(new Vec2(0.0f, -10.0f));
    
   //Screen width and height
-  public static final int WIDTH = 600;
+  public static final int WIDTH = 1000;//600;
   public static final int HEIGHT = 600;
    
   //Ball radius in pixel
@@ -75,7 +75,7 @@ public class Utility
     return y;
   }
 
-  //Convert a JBox2D width to pixel width
+//Convert a JBox2D width to pixel width
   public static float toPixelWidth(float width) {
     return WIDTH*width / 100.0f;
   }
@@ -83,5 +83,15 @@ public class Utility
   //Convert a JBox2D height to pixel height
   public static float toPixelHeight(float height) {
     return HEIGHT*height/100.0f;
+  }
+  
+  //Convert a pixel width to JBox2D width
+  public static float toWidth(float width) {
+    return 100.0f*width / WIDTH;
+  }
+  
+//Convert a pixel height to JBox2D height
+  public static float toHeight(float height) {
+    return 100.0f*height/HEIGHT;
   }
 }

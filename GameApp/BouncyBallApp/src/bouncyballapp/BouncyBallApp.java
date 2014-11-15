@@ -16,6 +16,7 @@ import javafx.scene.control.Button;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -24,7 +25,7 @@ public class BouncyBallApp extends Application {
   Group root = new Group(); //Create a group for holding all objects on the screen
   Scene scene = new Scene(root, Utility.WIDTH, Utility.HEIGHT);
   
-  ArrayList<BouncyBall> balls = new ArrayList<BouncyBall>();
+  ArrayList<BuildingRect> balls = new ArrayList<BuildingRect>();
 
   @Override
   public void start(Stage primaryStage) {
@@ -35,10 +36,17 @@ public class BouncyBallApp extends Application {
     
 
     //create ball   
-    balls.add(new BouncyBall(45, 90, Utility.BALL_RADIUS, Color.RED));
+    //balls.add(new BouncyBall(45, 90, Utility.BALL_RADIUS, Color.RED));
 
     //Add ground to the application, this is where balls will land
-    Utility.addGround(100, 10);
+    Utility.addGround(100, 20);
+    Rectangle r = new Rectangle();
+    r.setX(0);
+    r.setY(Utility.toPixelPosY(10));
+    r.setWidth(Utility.WIDTH);
+    r.setHeight(100);
+    r.setArcWidth(20);
+    r.setArcHeight(20);
 
     //Add left and right walls so balls will not move outside the viewing area.
     Utility.addWall(0,100,1,100); //Left wall
@@ -53,21 +61,25 @@ public class BouncyBallApp extends Application {
     scene.addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
       @Override
       public void handle(MouseEvent mouseEvent) {
-        for(int i=0; i<20; i++)
+        if(Utility.toPosY((float)mouseEvent.getY()) > 10)
         {
-        BouncyBall newBall = new BouncyBall(Utility.toPosX((float)mouseEvent.getX()), Utility.toPosY((float)mouseEvent.getY()), Utility.BALL_RADIUS, Color.RED);
-        System.out.println(Utility.toPosX((float)mouseEvent.getX()) + " " + Utility.toPosY((float)mouseEvent.getY()));
-        root.getChildren().add(newBall.node);
-        System.out.println("mouse click: "+mouseEvent.getSource());
-        
-        Body body = (Body)newBall.node.getUserData();
-        float xpos = Utility.toPixelPosX(body.getPosition().x);
-        float ypos = Utility.toPixelPosY(body.getPosition().y);
-        
-        newBall.node.setLayoutX(xpos);
-        newBall.node.setLayoutY(ypos);
-        
-        balls.add(newBall);
+          for(int i=0; i<1; i++)
+          {
+            BuildingRect newRect = new BuildingRect(Utility.toPosX((float)mouseEvent.getX()), Utility.toPosY((float)mouseEvent.getY()), 10, 20, Color.BLUE);
+            //BouncyBall newBall = new BouncyBall(Utility.toPosX((float)mouseEvent.getX()), Utility.toPosY((float)mouseEvent.getY()), Utility.BALL_RADIUS, Color.RED);
+            System.out.println(Utility.toPosX((float)mouseEvent.getX()) + " " + Utility.toPosY((float)mouseEvent.getY()));
+            root.getChildren().add(newRect.node);
+            System.out.println("mouse click: "+mouseEvent.getSource());
+
+            Body body = (Body)newRect.node.getUserData();
+            float xpos = Utility.toPixelPosX(body.getPosition().x);
+            float ypos = Utility.toPixelPosY(body.getPosition().y);
+
+            newRect.node.setLayoutX(xpos);
+            newRect.node.setLayoutY(ypos);
+
+            balls.add(newRect);
+          }
         }
       }
     });
@@ -77,7 +89,7 @@ public class BouncyBallApp extends Application {
         //Create time step. Set Iteration count 8 for velocity and 3 for positions
         Utility.world.step(1.0f/60.f, 8, 3); 
 
-        for(BouncyBall bally : balls)
+        for(BuildingRect bally : balls)
         {
           Body b = (Body)bally.node.getUserData();;
 
@@ -87,6 +99,7 @@ public class BouncyBallApp extends Application {
           float ypos = Utility.toPixelPosY(b.getPosition().y);
           bally.node.setLayoutX(xpos);
           bally.node.setLayoutY(ypos);
+          bally.node.setRotate(-180*b.getAngle()/((float) Math.PI));
         }
       }
     };
@@ -112,8 +125,9 @@ public class BouncyBallApp extends Application {
       }
     });
 
+    root.getChildren().add(r);
     root.getChildren().add(btn);
-    for(BouncyBall b : balls)
+    for(BuildingRect b : balls)
     {
       root.getChildren().add(b.node);
     }
