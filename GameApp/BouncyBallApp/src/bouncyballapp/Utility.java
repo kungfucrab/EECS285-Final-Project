@@ -4,6 +4,8 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.geometry.Point2D;
+import javafx.scene.input.MouseEvent;
 
 import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.common.Vec2;
@@ -12,6 +14,7 @@ import org.jbox2d.dynamics.FixtureDef;
 import org.jbox2d.dynamics.World;
 
 import com.sun.javafx.Utils;
+import java.util.Vector;
 
 public class Utility
 {
@@ -31,6 +34,12 @@ public class Utility
   
   public static Canvas canvas;
   public static GraphicsContext gc;
+  
+  public static GameState gameState;
+  
+  public static Point2D mousePosition = new Point2D(0, 0);
+  
+  public static Vector<ClickResponder> clickResponders = new Vector<ClickResponder>();
   
   //This method adds a ground to the screen. 
   public static void addGround(float width, float height){
@@ -104,5 +113,27 @@ public class Utility
 //Convert a pixel height to JBox2D height
   public static float toHeight(float height) {
     return 100.0f*height/HEIGHT;
+  }
+  
+  public void TransitionGameState(GameState newState)
+  {
+    Utility.gameState.cleanUp();
+    Utility.gameState = newState;
+  }
+  
+  public static void RegisterForClicks(ClickResponder clickResponder)
+  {
+    clickResponders.add(clickResponder);
+  }
+  public static void UnregisterForClicks(ClickResponder clickResponder)
+  {
+    clickResponders.remove(clickResponder);
+  }
+  public static void fireClickResponders(MouseEvent mouseEvent)
+  {
+    for(ClickResponder c : clickResponders)
+    {
+      c.onClick(mouseEvent);
+    }
   }
 }

@@ -22,9 +22,13 @@ import javafx.scene.paint.*;
 import javafx.scene.canvas.*;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import javafx.geometry.Point2D;
 import bouncyballapp.Crate;
 import bouncyballapp.BouncyText;
 import bouncyballapp.WaveText;
+import bouncyballapp.GameState;
+import bouncyballapp.MenuState;
+
 
 public class BouncyBallApp extends Application {
   
@@ -44,8 +48,7 @@ public class BouncyBallApp extends Application {
     Utility.root.getChildren().add(Utility.canvas);
     
     // Temporary menu texts...
-    WaveText wt = new WaveText("Structural Showdown", 100, 100);
-    BouncyText btnArcade = new BouncyText("Arcade Mode", 100, 200, 40);
+    
     /*BouncyText btnGallery = new BouncyText("Gallery", 100, 250, 20);
     BouncyText btnCredits = new BouncyText("Credits", 100, 300, 20);
     BouncyText btnQuit = new BouncyText("Quit", 100, 350, 20);*/
@@ -53,6 +56,8 @@ public class BouncyBallApp extends Application {
     primaryStage.setTitle("Bouncy Ball");
     primaryStage.setFullScreen(false);
     primaryStage.setResizable(false);
+    
+    Utility.gameState = new MenuState();
 
     Utility.addGround(100, 20);
 
@@ -74,10 +79,20 @@ public class BouncyBallApp extends Application {
           PhysicalGameObject newPGObject;
           newPGObject = new Crate(Utility.toPosX((float)mouseEvent.getX()), Utility.toPosY((float)mouseEvent.getY()), 50, 50);
           
+          Utility.fireClickResponders(mouseEvent);
+          
           pGameObjects.add(newPGObject);
         }
       }
     });
+    
+    Utility.scene.addEventFilter(MouseEvent.MOUSE_MOVED, new EventHandler<MouseEvent>() {
+      @Override
+      public void handle(MouseEvent mouseEvent) {
+        Utility.mousePosition = new Point2D(mouseEvent.getX(), mouseEvent.getY());
+      }
+    });
+    
     //Create an ActionEvent, on trigger it executes a world time step and moves the balls to new position 
     EventHandler<ActionEvent> ae = new EventHandler<ActionEvent>() {
       public void handle(ActionEvent t) {
@@ -85,6 +100,8 @@ public class BouncyBallApp extends Application {
         Utility.world.step(1.0f/60.f, 8, 3); 
         
         Utility.gc.clearRect(0, 0, Utility.WIDTH, Utility.HEIGHT);
+        
+        Utility.gameState.update();
         SpecialText.updateSystem();
         
         for(PhysicalGameObject pgObject : pGameObjects)
@@ -102,19 +119,8 @@ public class BouncyBallApp extends Application {
 
     timeline.getKeyFrames().add(frame);
 
-    //Create button to start simulation.
-    final Button btn = new Button();
-    btn.setLayoutX((Utility.WIDTH/2) -15);
-    btn.setLayoutY((Utility.HEIGHT-30));
-    btn.setText("Start");
-    btn.setOnAction(new EventHandler<ActionEvent>() {
-      public void handle(ActionEvent event) {
-        timeline.playFromStart(); 
-        btn.setVisible(false);
-      }
-    });
+    timeline.playFromStart(); 
 
-    Utility.root.getChildren().add(btn);
     primaryStage.setScene(Utility.scene);
     primaryStage.show();
   }

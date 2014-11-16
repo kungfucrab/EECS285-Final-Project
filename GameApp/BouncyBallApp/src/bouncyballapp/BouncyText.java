@@ -4,13 +4,13 @@ import javafx.scene.text.*;
 
 public class BouncyText extends SpecialText
 {
-  private float scale = 0.0f;
-  private float target = 0.0f;
-  private float stiffness = 0.1f;
-  private float velocity = 0.0f;
-  private float damping = 0.999f;
+  private double scale = 0.0f;
+  private double target = 0.0f;
+  private double stiffness = 0.001f;
+  private double velocity = 0.0f;
+  private double damping = 0.99f;
   
-  public BouncyText(String message, int x, int y, float target)
+  public BouncyText(String message, int x, int y, double target)
   {
     this.target = target;
     init(message, x, y);
@@ -21,7 +21,7 @@ public class BouncyText extends SpecialText
   {
     for(int i = 0; i < characters.size(); i++)
     {
-      float force = (target - scale) * stiffness;
+      double force = (target - scale) * stiffness;
       velocity = damping * (velocity + force);
       scale += velocity;
       
@@ -31,7 +31,7 @@ public class BouncyText extends SpecialText
     }
   }
   
-  public void setTarget(float t)
+  public void setTarget(double t)
   {
     this.target = t;
   }

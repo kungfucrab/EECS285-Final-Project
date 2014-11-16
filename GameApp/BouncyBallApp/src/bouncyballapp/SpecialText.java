@@ -1,6 +1,7 @@
 package bouncyballapp;
 import java.util.Vector;
 import javafx.scene.text.*;
+import javafx.geometry.Point2D;
 
 public abstract class SpecialText
 {
@@ -35,6 +36,11 @@ public abstract class SpecialText
     {
       w.update();
     }
+  }
+  
+  public Point2D getPosition()
+  {
+    return new Point2D(this.x, this.y);
   }
   
   abstract void update();
