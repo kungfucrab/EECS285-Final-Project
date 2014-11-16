@@ -94,8 +94,7 @@ public class BouncyBallApp extends Application {
         Utility.fireClickResponders(mouseEvent);
       }
     });
-    
-    Utility.scene.addEventFilter(MouseEvent.MOUSE_MOVED, new EventHandler<MouseEvent>() {
+    Utility.scene.addEventFilter(MouseEvent.ANY, new EventHandler<MouseEvent>() {
       @Override
       public void handle(MouseEvent mouseEvent) {
         Utility.mousePosition = new Point2D(mouseEvent.getX(), mouseEvent.getY());

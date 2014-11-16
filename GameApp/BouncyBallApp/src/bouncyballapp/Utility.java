@@ -15,6 +15,7 @@ import org.jbox2d.dynamics.World;
 
 import com.sun.javafx.Utils;
 
+import java.util.ArrayList;
 import java.util.Vector;
 
 import javax.swing.text.html.HTMLDocument.Iterator;
@@ -48,16 +49,19 @@ public class Utility
   private static String player1Username;
   private static String player2Username;
   
+  private static ArrayList<PhysicalGameObject> pGameObjects1 = new ArrayList<PhysicalGameObject>();
+  private static ArrayList<PhysicalGameObject> pGameObjects2 = new ArrayList<PhysicalGameObject>();
+  
   //This method adds a ground to the screen. 
   public static void addGround(float width, float height){
     PolygonShape ps = new PolygonShape();
-    ps.setAsBox(toWidth(100000),toHeight(10));
+    ps.setAsBox(100000,10);
          
     FixtureDef fd = new FixtureDef();
     fd.shape = ps;
  
     BodyDef bd = new BodyDef();
-    bd.position= new Vec2(0.0f,toPosY(1000) - toHeight(10)/2);
+    bd.position= new Vec2(0, -10);
  
     world.createBody(bd).createFixture(fd);
   }
@@ -155,5 +159,18 @@ public class Utility
         copyVec.get(i).onClick(mouseEvent);
       }
     }
+  }
+  
+  public static ArrayList<PhysicalGameObject> getPGameObjects(int playerNum)
+  {
+    if(playerNum == 1)
+    {
+      return pGameObjects1;
+    }
+    else
+    {
+      return pGameObjects2;
+    }
+    //return new ArrayList<PhysicalGameObject>();
   }
 }
