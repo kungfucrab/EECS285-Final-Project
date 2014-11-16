@@ -2,12 +2,16 @@ package bouncyballapp;
 
 import java.util.ArrayList;
 
+import org.jbox2d.dynamics.BodyType;
+
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Camera;
 import javafx.scene.ParallelCamera;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -34,17 +38,36 @@ public class TowerCreateState extends GameState implements ClickResponder
   Camera camera = new ParallelCamera();
   int camX = 0;
   
+  float timeLeft = 10.0f;
 
   float text_size = 0;
   
-  public TowerCreateState()
+  boolean acceptClicks = true;
+  boolean acceptEggClicks = false;
+  
+  int playerNum = 1;
+  
+  boolean eggPlaced = false;
+  
+  public TowerCreateState(int inPlayerNum)
   {
+    this.playerNum = inPlayerNum;
+    
+    Utility.scene.setCamera(camera);
+    
+    if(playerNum == 2)
+    {  
+      camX = 1000;
+      
+    }
+    //System.out.println(camX);
+    
     Utility.RegisterForClicks(this);
     Utility.addGround(100, 20);
 
     //Add left and right walls so balls will not move outside the viewing area.
-    Utility.addWall(0,100,1,100); //Left wall
-    Utility.addWall(99,100,1,100); //Right wall
+    //Utility.addWall(0,100,1,100); //Left wall
+    //Utility.addWall(99,100,1,100); //Right wall
     
     final Timeline timeline = new Timeline();
     timeline.setCycleCount(Timeline.INDEFINITE);
@@ -91,13 +114,53 @@ public class TowerCreateState extends GameState implements ClickResponder
     Utility.root.getChildren().add(toPlace1);
     Utility.root.getChildren().add(toPlace2);
     Utility.root.getChildren().add(toPlace3);
+    
+    Utility.scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
 
+      @Override
+      public void handle(KeyEvent t) {
+        if(t.getCode() == KeyCode.SPACE && timeLeft <= 0 && !eggPlaced)
+        {
+          acceptEggClicks = true;
+        }
+        else if(t.getCode() == KeyCode.SPACE && timeLeft <= 0)
+        {
+          if(playerNum == 1)
+          {
+            
+            Utility.transitionGameState(new TowerCreateState(2));
+          }
+          if(playerNum == 2)
+          {
+            //TODO Go to actual game
+          }
+        }
+      }
+    });
     
   }
   
   @Override
   public void onClick(MouseEvent mouseEvent)
   {
+    if(!acceptClicks)
+    {
+      if(acceptEggClicks)
+      {
+        PhysicalGameObject newPGObject;
+        newPGObject = new Egg(Utility.toPosX((float)mouseEvent.getX())
+                              , Utility.toPosY((float)mouseEvent.getY())
+                              , 25, "Player "+ playerNum);
+        
+        pGameObjects.add(newPGObject);
+        
+        acceptEggClicks = false;
+        
+        eggPlaced = true;
+        
+      }
+      return;
+    }
     
     if(mouseEvent.isPrimaryButtonDown())
     {
@@ -118,10 +181,10 @@ public class TowerCreateState extends GameState implements ClickResponder
     }
     else if(mouseEvent.isMiddleButtonDown())
     {
-      PhysicalGameObject newPGObject;
-      newPGObject = new Ball(Utility.toPosX((float)mouseEvent.getX()), Utility.toPosY((float)mouseEvent.getY()), 25);
+     //PhysicalGameObject newPGObject;
+      //newPGObject = new Ball(Utility.toPosX((float)mouseEvent.getX()), Utility.toPosY((float)mouseEvent.getY()), 25);
       
-      pGameObjects.add(newPGObject);
+      //pGameObjects.add(newPGObject);
     }
   }
 
@@ -130,11 +193,6 @@ public class TowerCreateState extends GameState implements ClickResponder
   {
     //Create time step. Set Iteration count 8 for velocity and 3 for positions
     Utility.world.step(1.0f/60.f, 8, 3); 
-    
-    for(PhysicalGameObject pgObject : pGameObjects)
-    {
-      pgObject.update();
-    }
     
     mouseX = (float) Utility.mousePosition.getX();
     mouseY = (float) Utility.mousePosition.getY();
@@ -160,15 +218,64 @@ public class TowerCreateState extends GameState implements ClickResponder
     measure4.setLayoutY(mouseY + 0 - 50f/2);
     measure5.setLayoutY(mouseY + 0 - 50f/2);
     
-    //camera.setLayoutX(camX);
+    for(PhysicalGameObject pgObject : pGameObjects)
+    {
+      pgObject.update();
+    }
+    
+    Utility.gc.getCanvas().setLayoutX(camX);
+    
+    if(timeLeft <= 0)
+    {
+      if(!eggPlaced)
+      {
+        Utility.gc.fillText("PRESS SPACE TO PLACE EGG", 20, 20);
+      }
+      else if(eggPlaced)
+      {
+        if(playerNum == 1)
+        {
+          Utility.gc.fillText("PRESS SPACE FOR PLAYER 2 BUILD", 20, 20);
+        }
+        if(playerNum == 2)
+        {
+          Utility.gc.fillText("PRESS SPACE TO START GAME", 20, 20);
+        }
+      }
+      timeLeft = 0;
+      acceptClicks = false;
+      return;
+    }
+    Utility.gc.fillText(Float.toString(timeLeft), 20, 20);
+    
+    timeLeft -= 1.0f/60;
+    if(timeLeft <= 0)
+    {
+      timeLeft = 0;
+    }
+    //Utility.gc.fillText(Float.toString(timeLeft), 20, 20);
+    
+    
+    
+    
+    
+    camera.setLayoutX(camX);
     //camX++;
   }
 
   @Override
   void cleanUp()
   {
-    // TODO Auto-generated method stub
+    ArrayList<PhysicalGameObject> pgoList = Utility.getPGameObjects(playerNum);
+    pgoList.clear();
+    pgoList.addAll(pGameObjects);
     
+    for(PhysicalGameObject pgo : pGameObjects)
+    {
+      pgo.getBody().setType(BodyType.STATIC);
+      //pgo.getBody().getFixtureList().
+    }
+    pGameObjects.clear();
   }
   
 }

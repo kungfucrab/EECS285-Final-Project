@@ -46,7 +46,7 @@ public class MenuState extends GameState implements ClickResponder
     public void onClick()
     {
       if(highlighted)
-        Utility.transitionGameState(new TowerCreateState());
+        Utility.transitionGameState(new TowerCreateState(1));
     }
   }
   

@@ -25,6 +25,7 @@ public class WaveText extends SpecialText
   
   public void cleanUp()
   {
+     Utility.gc.setFont(Font.font("Verdana", 32));
      waveTexts.remove(this);
   }
 }
