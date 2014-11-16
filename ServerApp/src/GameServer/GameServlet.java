@@ -20,6 +20,7 @@ public class GameServlet extends HttpServlet
     out.println("You did a get");
     out.println("</body>");
     out.println("</html>");
+    
   }
   
   protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException

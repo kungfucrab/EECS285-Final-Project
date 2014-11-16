@@ -6,19 +6,17 @@ CREATE TABLE users
 
 CREATE TABLE towers
 (
-	towerid BIGINT(20) AUTO_INCREMENT PRIMARY KEY,
-	towername VARCHAR(100),
+	towername VARCHAR(100) PRIMARY KEY,
 	wins INT,
 	loses INT,
-	winloseratio INT,
 	towerdata VARCHAR (500)
 );
 
 CREATE TABLE tower_user_rel
 (
 	username VARCHAR(100),
-	towerid BIGINT(20),
-	PRIMARY KEY (username, towerid),
+	towername VARCHAR(100),
+	PRIMARY KEY (username, towername),
 	FOREIGN KEY (username) REFERENCES users (username),
-	FOREIGN KEY (towerid) REFERENCES towers (towerid)
+	FOREIGN KEY (towername) REFERENCES towers (towername)
 );
