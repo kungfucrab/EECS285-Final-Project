@@ -22,4 +22,9 @@ public class WaveText extends SpecialText
       Utility.gc.fillText(t.getText(), this.x + i * 25, this.y);
     }
   }
+  
+  public void cleanUp()
+  {
+     waveTexts.remove(this);
+  }
 }

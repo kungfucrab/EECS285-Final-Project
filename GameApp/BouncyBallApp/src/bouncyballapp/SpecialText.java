@@ -25,6 +25,8 @@ public abstract class SpecialText
     }
   }
   
+  public abstract void cleanUp();
+  
   public static void updateSystem()
   {
     for(BouncyText b : bouncyTexts)

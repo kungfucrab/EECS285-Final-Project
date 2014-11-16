@@ -14,17 +14,20 @@ import org.jbox2d.dynamics.FixtureDef;
 import org.jbox2d.dynamics.World;
 
 import com.sun.javafx.Utils;
+
 import java.util.Vector;
+
+import javax.swing.text.html.HTMLDocument.Iterator;
 
 public class Utility
 {
 
-//Create a JBox2D world. 
+//Create a JBox2D world.
   public static final World world = new World(new Vec2(0.0f, -10.0f));
    
   //Screen width and height
   public static final int WIDTH = 1000;//600;
-  public static final int HEIGHT = 600;
+  public static final int HEIGHT = 1000;
    
   //Ball radius in pixel
   public static final int BALL_RADIUS = 8;
@@ -39,18 +42,22 @@ public class Utility
   
   public static Point2D mousePosition = new Point2D(0, 0);
   
-  public static Vector<ClickResponder> clickResponders = new Vector<ClickResponder>();
+  private static Vector<ClickResponder> clickResponders = new Vector<ClickResponder>();
+  public static Vector<TickResponder> tickResponders = new Vector<TickResponder>();
+  
+  private static String player1Username;
+  private static String player2Username;
   
   //This method adds a ground to the screen. 
   public static void addGround(float width, float height){
     PolygonShape ps = new PolygonShape();
-    ps.setAsBox(width,height);
+    ps.setAsBox(toWidth(100000),toHeight(10));
          
     FixtureDef fd = new FixtureDef();
     fd.shape = ps;
  
     BodyDef bd = new BodyDef();
-    bd.position= new Vec2(0.0f,-10f);
+    bd.position= new Vec2(0.0f,toPosY(1000) - toHeight(10)/2);
  
     world.createBody(bd).createFixture(fd);
   }
@@ -115,25 +122,38 @@ public class Utility
     return 100.0f*height/HEIGHT;
   }
   
-  public void TransitionGameState(GameState newState)
+  public static void transitionGameState(GameState newState)
   {
+    System.out.println("TRANSITIONING GAME STATE");
     Utility.gameState.cleanUp();
     Utility.gameState = newState;
   }
   
   public static void RegisterForClicks(ClickResponder clickResponder)
   {
-    clickResponders.add(clickResponder);
-  }
-  public static void UnregisterForClicks(ClickResponder clickResponder)
-  {
-    clickResponders.remove(clickResponder);
-  }
-  public static void fireClickResponders(MouseEvent mouseEvent)
-  {
-    for(ClickResponder c : clickResponders)
+    synchronized(clickResponders)
     {
-      c.onClick(mouseEvent);
+      clickResponders.add(clickResponder);
+    }
+  }
+  public static synchronized void UnregisterForClicks(ClickResponder clickResponder)
+  {
+    synchronized(clickResponders)
+    {
+      clickResponders.remove(clickResponder);
+    }
+  }
+  public static synchronized void fireClickResponders(MouseEvent mouseEvent)
+  {
+    synchronized(clickResponders)
+    {
+      Vector<ClickResponder> copyVec;
+      copyVec = (Vector<ClickResponder>)clickResponders.clone();
+
+      for(int i = 0; i < copyVec.size(); i++)
+      {
+        copyVec.get(i).onClick(mouseEvent);
+      }
     }
   }
 }

@@ -35,4 +35,9 @@ public class BouncyText extends SpecialText
   {
     this.target = t;
   }
+  
+  public void cleanUp()
+  {
+     bouncyTexts.remove(this);
+  }
 }

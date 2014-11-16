@@ -6,6 +6,7 @@ import java.awt.event.*;
 import javafx.event.*;
 import javafx.scene.input.MouseEvent;
 import javafx.geometry.Point2D;
+import bouncyballapp.TowerCreateState;
 
 public class MenuState extends GameState implements ClickResponder
 {
@@ -29,6 +30,10 @@ public class MenuState extends GameState implements ClickResponder
       }
     }
     public void onClick() { }
+    public void cleanUp()
+    {
+      text.cleanUp();
+    }
   }
   
   public class ArcadeMenuChoice extends MenuChoice
@@ -40,7 +45,8 @@ public class MenuState extends GameState implements ClickResponder
     
     public void onClick()
     {
-      
+      if(highlighted)
+        Utility.transitionGameState(new TowerCreateState());
     }
   }
   
@@ -101,34 +107,53 @@ public class MenuState extends GameState implements ClickResponder
   HashMap<Integer, MenuChoice> choices = new HashMap<Integer, MenuChoice>();
   
   public MenuState()
-  { 
-    choices.put(0, new ArcadeMenuChoice());
-    choices.put(1, new GalleryMenuChoice());
-    choices.put(2, new ProfileMenuChoice());
-    choices.put(3, new CreditsMenuChoice());
-    choices.put(4, new QuitMenuChoice());
-    
+  {
+    synchronized(choices)
+    {
+      choices.put(0, new ArcadeMenuChoice());
+      choices.put(1, new GalleryMenuChoice());
+      choices.put(2, new ProfileMenuChoice());
+      choices.put(3, new CreditsMenuChoice());
+      choices.put(4, new QuitMenuChoice());
+    }
     Utility.RegisterForClicks(this);
   }
   
   public void onClick(MouseEvent _)
   {
-    for(MenuChoice m : choices.values())
+    synchronized(choices)
     {
-      m.onClick();
+      HashMap<Integer, MenuChoice> temp = (HashMap<Integer, MenuChoice>)choices.clone();
+      for(MenuChoice m : temp.values())
+      {
+        m.onClick();
+      }
     }
   }
   
   public void update()
   {
-    for(MenuChoice c : choices.values())
+    synchronized(choices)
     {
-      c.update();
+      for(MenuChoice c : choices.values())
+      {
+        c.update();
+      }
     }
   }
   
   public void cleanUp()
   {
-    
+    Utility.UnregisterForClicks(this);
+    synchronized(choices)
+    {
+      for(MenuChoice c : choices.values())
+      {
+        c.cleanUp();
+      }
+      
+      choices.clear();
+      Utility.gc.clearRect(0, 0, Utility.WIDTH, Utility.HEIGHT);
+    }
   }
 }

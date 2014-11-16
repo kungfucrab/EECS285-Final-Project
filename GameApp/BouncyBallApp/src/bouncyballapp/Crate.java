@@ -1,5 +1,7 @@
 package bouncyballapp;
 
+import java.util.Random;
+
 import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.dynamics.Body;
 import org.jbox2d.dynamics.BodyDef;
@@ -30,10 +32,11 @@ public class Crate extends PhysicalGameObject implements Serializable
     Rectangle r = new Rectangle();
     r.setWidth(this.width);
     r.setHeight(this.height);
+    r.setFill(createColor());
     return r;
   }
   
-  public PolygonShape createShape()
+  public org.jbox2d.collision.shapes.Shape createShape()
   {
     PolygonShape ps = new PolygonShape();
     ps.setAsBox(Utility.toWidth(width/2), Utility.toHeight(height/2));
@@ -49,9 +52,29 @@ public class Crate extends PhysicalGameObject implements Serializable
     return fd;
   }
   
+  public void update()
+  {
+    Body body = getBody();
+    float xpos = Utility.toPixelPosX(body.getPosition().x);
+    float ypos = Utility.toPixelPosY(body.getPosition().y);
+    
+    Shape fxShape = getfxShape();
+    float pWidth = Utility.toPixelWidth(width);
+    float pHeight = Utility.toPixelWidth(height);
+    fxShape.setLayoutX(xpos - width/2);
+    fxShape.setLayoutY(ypos - height/2);
+    fxShape.setRotate(-180*body.getAngle()/((float) Math.PI));
+  }
+  
   public Color createColor()
   {
-    return Color.RED;
+    Random rand = new Random();
+    
+    int r = rand.nextInt(128)+64;
+    int g = rand.nextInt(128)+128;
+    int b = rand.nextInt(128)+64;
+    
+    return Color.rgb(r, g, b);
   }
   
   public String getStringRepresentation()
