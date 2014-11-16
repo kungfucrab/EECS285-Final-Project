@@ -17,7 +17,6 @@ import com.sun.javafx.Utils;
 
 import java.util.Vector;
 
-import javax.swing.text.html.HTMLDocument.Iterator;
 
 public class Utility
 {
