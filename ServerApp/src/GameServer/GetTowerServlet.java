@@ -67,7 +67,7 @@ public class GetTowerServlet extends HttpServlet {
 		 }
 		 //get 1 tower
 		 else {
-			 String query = "SELECT towername, wins, loses FROM towers WHERE (wins) IN (SELECT MAX(wins) FROM towers );";
+			 String query = "SELECT towername, wins, loses, towerdata FROM towers WHERE (wins) IN (SELECT MAX(wins) FROM towers );";
 			 try {
 		    		Class.forName("com.mysql.jdbc.Driver").newInstance();
 			    	conn = DriverManager.getConnection(GameServerMain.server, GameServerMain.serverUsername, GameServerMain.serverPassword);
@@ -76,6 +76,7 @@ public class GetTowerServlet extends HttpServlet {
 			    	int wins = 0;
 			    	int loses = 0;
 			    	String towername = "";
+			    	String towerdata = "";
 			    	try {
 			    		stmt = conn.createStatement();
 			    		ResultSet rs = stmt.executeQuery(query);
@@ -84,12 +85,14 @@ public class GetTowerServlet extends HttpServlet {
 			    			towername = rs.getString("towername");
 			    			wins = rs.getInt("wins");
 			    			loses = rs.getInt("loses");
+			    			towerdata = rs.getString("towerdata");
 			    		}
 			    		
 			    		Dictionary dict = new Hashtable();
 			    		dict.put("towername", towername);
 			    		dict.put("wins", Integer.toString(wins));
 			    		dict.put("loses", Integer.toString(loses));
+			    		dict.put("towerdata", towerdata);
 			    		out.println(dict);
 			    		
 			    	}

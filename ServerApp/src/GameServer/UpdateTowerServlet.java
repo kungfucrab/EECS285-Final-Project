@@ -58,7 +58,7 @@ public class UpdateTowerServlet extends HttpServlet {
 		    }
 		}
 		else {
-			out.println("missing params or towers does not exist");
+			out.println("missing params or tower does not exist");
 		}
 	}
 }
