@@ -27,25 +27,25 @@ public abstract class PhysicalGameObject implements Serializable
     body.createFixture(fd);
     
     Utility.root.getChildren().add(fxShape);
+    
+    update();
   }
   
   abstract Shape createFXShape();
-  abstract PolygonShape createShape();
+  abstract org.jbox2d.collision.shapes.Shape createShape();
   abstract FixtureDef createFixtureDef();
   abstract Color createColor();
   
-  public void update()
-  {
-    float xpos = Utility.toPixelPosX(body.getPosition().x);
-    float ypos = Utility.toPixelPosY(body.getPosition().y);
-    fxShape.setLayoutX(xpos);
-    fxShape.setLayoutY(ypos);
-    fxShape.setRotate(-180*body.getAngle()/((float) Math.PI));
-  }
+  abstract void update();
   
   public Body getBody()
   {
     return body;
+  }
+  
+  public Shape getfxShape()
+  {
+    return fxShape;
   }
   
   public BodyDef createBodyDef(float x, float y)

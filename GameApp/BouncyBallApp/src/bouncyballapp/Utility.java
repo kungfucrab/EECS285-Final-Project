@@ -21,7 +21,7 @@ public class Utility
    
   //Screen width and height
   public static final int WIDTH = 1000;//600;
-  public static final int HEIGHT = 600;
+  public static final int HEIGHT = 1000;
    
   //Ball radius in pixel
   public static final int BALL_RADIUS = 8;
