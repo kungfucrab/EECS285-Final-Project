@@ -22,6 +22,7 @@ public class GetTowerServlet extends HttpServlet {
 		 //get all the users towers
 		 if(q != null) {
 			 ArrayList al = new ArrayList();
+			 String usersTowers = "";
 			 String query = "SELECT T.towername, T.wins, T.loses FROM towers T, tower_user_rel R WHERE T.towername = R.towername and R.username = \"" + q + "\";";
 			 try {
 		    		Class.forName("com.mysql.jdbc.Driver").newInstance();
@@ -40,13 +41,15 @@ public class GetTowerServlet extends HttpServlet {
 			    			wins = rs.getInt("T.wins");
 			    			loses = rs.getInt("T.loses");
 			    		
-			    			Dictionary dict = new Hashtable();
-				    		dict.put("towername", towername);
-				    		dict.put("wins", Integer.toString(wins));
-				    		dict.put("loses", Integer.toString(loses));
-				    		al.add(dict);
+//			    			Dictionary dict = new Hashtable();
+//				    		dict.put("towername", towername);
+//				    		dict.put("wins", Integer.toString(wins));
+//				    		dict.put("loses", Integer.toString(loses));
+//				    		al.add(dict);
+			    			
+			    			usersTowers += towername + " " + wins + " " + loses + ";";
 			    		}
-			    		out.println(al);
+			    		out.println(usersTowers);
 			    		
 			    	}
 			    	catch (SQLException e ) {

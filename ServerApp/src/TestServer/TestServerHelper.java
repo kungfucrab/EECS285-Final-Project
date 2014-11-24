@@ -31,5 +31,13 @@ public class TestServerHelper {
 		
 		//add new tower for user
 		System.out.println(ServerHelper.addNewUserTower("bob", "legotower", "towerdatayoyo"));
+		
+		//get users towers
+		System.out.println("bobs towers:");
+		System.out.println(ServerHelper.getUserTowers("bob"));
+		System.out.println("--------");
+		System.out.println("jills towers:");
+		System.out.println(ServerHelper.getUserTowers("jill"));
+		System.out.println("--------");
 	}
 }

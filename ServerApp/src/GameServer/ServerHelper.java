@@ -92,6 +92,34 @@ public class ServerHelper {
 	}
 	
 //------------------------------------------------------------------------------------------------
+
+	public static String getUserTowers(String username) {
+		String userTowerDataString ="";
+		String url = baseurl + "/GetTower/";
+		
+		try {
+			String query = "username=" + 
+				     URLEncoder.encode(username, charset);
+			
+			URLConnection connection = new URL(url + "?" + query).openConnection();
+			connection.setRequestProperty("Accept-Charset", charset);
+			InputStream response = connection.getInputStream();
+			String data = getStringFromInputStream(response);
+			
+			String[] parts = data.split(";");
+			
+			for(int i = 0; i < parts.length; i++) {
+				userTowerDataString += parts[i] + "\n";
+			}
+		}
+		catch(Exception e) {
+			System.out.println(e.toString());
+		}
+		
+		return userTowerDataString;
+	}
+		
+//------------------------------------------------------------------------------------------------
 	
 	public static Boolean updateUserScore(String username) {
 		try {
