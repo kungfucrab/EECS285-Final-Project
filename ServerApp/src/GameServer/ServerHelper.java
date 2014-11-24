@@ -8,6 +8,8 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
+import java.util.Dictionary;
+import java.util.Hashtable;
 
 
 public class ServerHelper {
@@ -68,10 +70,120 @@ public class ServerHelper {
 
 	public static String getLeaderboard() {
 		String leaderBoardString ="";
+		String url = baseurl + "/Scores/";
 		
-		
+		try {
+			URLConnection connection = new URL(url).openConnection();
+			connection.setRequestProperty("Accept-Charset", charset);
+			InputStream response = connection.getInputStream();
+			String data = getStringFromInputStream(response);
+			
+			String[] parts = data.split(";");
+			
+			for(int i = 0; i < parts.length; i++) {
+				leaderBoardString += parts[i] + "\n";
+			}
+		}
+		catch(Exception e) {
+			System.out.println(e.toString());
+		}
 		
 		return leaderBoardString;
+	}
+	
+//------------------------------------------------------------------------------------------------
+	
+	public static Boolean updateUserScore(String username) {
+		try {
+			String url = baseurl + "/Scores/";
+			String query = "username=" + 
+				     URLEncoder.encode(username, charset);
+			
+			URLConnection connection = new URL(url + "?" + query).openConnection();
+			connection.setRequestProperty("Accept-Charset", charset);
+			InputStream response = connection.getInputStream();
+			
+			String data = getStringFromInputStream(response);
+			
+			//user score was found
+			if(data != null && !data.isEmpty()) {
+				String postURL = baseurl + "/Scores/";
+				String postQuery = "username=" + 
+					     URLEncoder.encode(username, charset);
+				int score = Integer.parseInt(data);
+				score++;
+				postQuery += "&score=" + 
+					     URLEncoder.encode(Integer.toString(score), charset);
+				
+				connection = new URL(postURL + "?" + postQuery).openConnection();
+				connection.setDoOutput(true); // Triggers POST.
+				connection.setRequestProperty("Accept-Charset", charset);
+				connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded;charset=" + charset);
+
+				try (OutputStream output = connection.getOutputStream()) {
+				    output.write(query.getBytes(charset));
+				}
+
+				response = connection.getInputStream();
+				data = getStringFromInputStream(response);
+				
+				//updated score for user
+				if(data.equals("User Score Updated Success")) {
+					return true;
+				}
+				//failed to update score for user
+				else {
+					System.out.println(data);
+					return false;
+				}
+			}
+			else {
+				return false;
+			}
+		}
+		catch(Exception e) {
+			System.out.println(e.toString());
+		}
+		
+		
+		return false;
+	}
+	
+//------------------------------------------------------------------------------------------------
+	
+	public static Dictionary<String, Object> getBestTower() {
+		Dictionary<String, Object> dict = new Hashtable<String, Object>();
+		
+		String url = baseurl + "/GetTower/";
+		
+		try {
+			URLConnection connection = new URL(url).openConnection();
+			connection.setRequestProperty("Accept-Charset", charset);
+			InputStream response = connection.getInputStream();
+			String data = getStringFromInputStream(response);
+
+			String[] parts = data.split(";");
+			
+    		dict.put("towername", parts[0]);
+    		dict.put("towerdata", stringToTowerData(parts[3]));
+    		dict.put("loses", Integer.parseInt(parts[1]));
+    		dict.put("wins", Integer.parseInt(parts[2]));
+		}
+		catch(Exception e) {
+			System.out.println(e.toString());
+		}
+		
+		return dict;
+	}
+	
+//------------------------------------------------------------------------------------------------
+
+	private static String stringToTowerData(String string) {
+		return string;
+	}
+	
+	private static String towerDataToString(String string) {
+		return string;
 	}
 	
 //------------------------------------------------------------------------------------------------

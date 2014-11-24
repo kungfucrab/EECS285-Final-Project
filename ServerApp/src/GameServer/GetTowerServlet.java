@@ -88,13 +88,16 @@ public class GetTowerServlet extends HttpServlet {
 			    			towerdata = rs.getString("towerdata");
 			    		}
 			    		
-			    		Dictionary dict = new Hashtable();
-			    		dict.put("towername", towername);
-			    		dict.put("wins", Integer.toString(wins));
-			    		dict.put("loses", Integer.toString(loses));
-			    		dict.put("towerdata", towerdata);
-			    		out.println(dict);
-			    		
+//			    		Dictionary dict = new Hashtable();
+//			    		dict.put("towername", towername);
+//			    		dict.put("wins", Integer.toString(wins));
+//			    		dict.put("loses", Integer.toString(loses));
+//			    		dict.put("towerdata", towerdata);
+//			    		out.println(dict);
+			    		String tower = towername + ";" + Integer.toString(wins) + ";" + Integer.toString(loses) 
+			    				+ ";" + towerdata;
+
+			    		out.println(tower);
 			    	}
 			    	catch (SQLException e ) {
 			    		System.out.println(e.toString());
