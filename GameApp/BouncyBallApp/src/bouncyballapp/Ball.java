@@ -5,6 +5,7 @@ import java.util.Random;
 import org.jbox2d.collision.shapes.CircleShape;
 import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.collision.shapes.Shape;
+import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.Body;
 import org.jbox2d.dynamics.BodyDef;
 import org.jbox2d.dynamics.BodyType;
@@ -21,11 +22,16 @@ public class Ball extends PhysicalGameObject implements Serializable
   /*
    * x and y are specified in box2d coordinates.
    */
-  public Ball(float x, float y, int radius)
+  public Ball(float x, float y, float impulseX, float impulseY, int radius)
   {
     this.radius = radius;
     
     init(x, y);
+    
+    Body body = getBody();
+    Vec2 force = new Vec2(impulseX, impulseY);
+    Vec2 point = body.getWorldPoint(body.getWorldCenter());
+    body.applyLinearImpulse(force ,point);
   }
   
   public javafx.scene.shape.Shape createFXShape()

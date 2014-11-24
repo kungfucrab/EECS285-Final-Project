@@ -16,6 +16,8 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.util.Duration;
 
 public class TowerCreateState extends GameState implements ClickResponder
@@ -24,6 +26,9 @@ public class TowerCreateState extends GameState implements ClickResponder
   
   float mouseX = Utility.WIDTH/2;
   float mouseY = Utility.HEIGHT/2;
+  
+  Text text = new Text(20, 40, "JavaFX Scene");
+  Font font = new Font(20);
   
   Circle toPlace1 = new Circle();
   Rectangle toPlace2 = new Rectangle();
@@ -38,7 +43,7 @@ public class TowerCreateState extends GameState implements ClickResponder
   Camera camera = new ParallelCamera();
   int camX = 0;
   
-  float timeLeft = 10.0f;
+  float timeLeft = 5.0f;
 
   float text_size = 0;
   
@@ -55,12 +60,23 @@ public class TowerCreateState extends GameState implements ClickResponder
     
     Utility.scene.setCamera(camera);
     
+    acceptClicks = true;
+    acceptEggClicks = false;
+    eggPlaced = false;
+    
     if(playerNum == 2)
     {  
       camX = 1000;
       
     }
     //System.out.println(camX);
+    
+    text.setFill(Color.DARKRED);
+    
+    text.setFont(font);
+    
+    Utility.root.getChildren().add(text);
+    
     
     Utility.RegisterForClicks(this);
     Utility.addGround(100, 20);
@@ -127,12 +143,13 @@ public class TowerCreateState extends GameState implements ClickResponder
         {
           if(playerNum == 1)
           {
-            
+            preCleanUp();
             Utility.transitionGameState(new TowerCreateState(2));
           }
           if(playerNum == 2)
           {
-            //TODO Go to actual game
+            preCleanUp();
+            Utility.transitionGameState(new PlayGameState());
           }
         }
       }
@@ -148,7 +165,7 @@ public class TowerCreateState extends GameState implements ClickResponder
       if(acceptEggClicks)
       {
         PhysicalGameObject newPGObject;
-        newPGObject = new Egg(Utility.toPosX((float)mouseEvent.getX())
+        newPGObject = new Egg(Utility.toPosX(0 + (float)mouseEvent.getX())
                               , Utility.toPosY((float)mouseEvent.getY())
                               , 25, "Player "+ playerNum);
         
@@ -164,18 +181,15 @@ public class TowerCreateState extends GameState implements ClickResponder
     
     if(mouseEvent.isPrimaryButtonDown())
     {
-      if(Utility.toPosY((float)mouseEvent.getY()) > 10)
-      {
-        PhysicalGameObject newPGObject;
-        newPGObject = new Crate(Utility.toPosX((float)mouseEvent.getX()), Utility.toPosY((float)mouseEvent.getY()), 10, 50);
-        
-        pGameObjects.add(newPGObject);
-      }
+      
+      PhysicalGameObject newPGObject;
+      newPGObject = new Crate(Utility.toPosX(0 + (float)mouseEvent.getX()), Utility.toPosY((float)mouseEvent.getY()), 10, 50);
+      pGameObjects.add(newPGObject);
     }
     else if(mouseEvent.isSecondaryButtonDown())
     {
       PhysicalGameObject newPGObject;
-      newPGObject = new Crate(Utility.toPosX((float)mouseEvent.getX()), Utility.toPosY((float)mouseEvent.getY()), 50, 10);
+      newPGObject = new Crate(Utility.toPosX(0 + (float)mouseEvent.getX()), Utility.toPosY((float)mouseEvent.getY()), 50, 10);
       
       pGameObjects.add(newPGObject);
     }
@@ -187,6 +201,12 @@ public class TowerCreateState extends GameState implements ClickResponder
       //pGameObjects.add(newPGObject);
     }
   }
+  
+  @Override
+  public void onRelease(MouseEvent mouseEvent)
+  {
+    
+  }
 
   @Override
   void update()
@@ -194,8 +214,12 @@ public class TowerCreateState extends GameState implements ClickResponder
     //Create time step. Set Iteration count 8 for velocity and 3 for positions
     Utility.world.step(1.0f/60.f, 8, 3); 
     
+    
+    
     mouseX = (float) Utility.mousePosition.getX();
     mouseY = (float) Utility.mousePosition.getY();
+    
+    //System.out.println("mouseX: " + mouseX);
     
     toPlace1.setLayoutX(mouseX);
     toPlace1.setLayoutY(mouseY);
@@ -223,30 +247,47 @@ public class TowerCreateState extends GameState implements ClickResponder
       pgObject.update();
     }
     
-    Utility.gc.getCanvas().setLayoutX(camX);
-    
+    //Utility.gc.getCanvas().setLayoutX(camX);
+    text.setLayoutX(camX);
     if(timeLeft <= 0)
     {
       if(!eggPlaced)
       {
-        Utility.gc.fillText("PRESS SPACE TO PLACE EGG", 20, 20);
+        if(!acceptEggClicks)
+        {
+          text.setText("PRESS SPACE TO PLACE EGG");
+        
+          //Utility.gc.fillText("PRESS SPACE TO PLACE EGG", 20, 20);
+        }
+        if(acceptEggClicks)
+        {
+          text.setText("CLICK TO PLACE EGG");
+        
+          //Utility.gc.fillText("PRESS SPACE TO PLACE EGG", 20, 20);
+        }
+        
       }
       else if(eggPlaced)
       {
+        
         if(playerNum == 1)
         {
-          Utility.gc.fillText("PRESS SPACE FOR PLAYER 2 BUILD", 20, 20);
+          text.setText("PRESS SPACE FOR PLAYER 2 BUILD");
+          //Utility.gc.fillText("PRESS SPACE FOR PLAYER 2 BUILD", 20, 20);
         }
         if(playerNum == 2)
         {
-          Utility.gc.fillText("PRESS SPACE TO START GAME", 20, 20);
+          text.setText("PRESS SPACE TO START GAME");
+          //Utility.gc.fillText("PRESS SPACE TO START GAME", 20, 20);
         }
       }
       timeLeft = 0;
       acceptClicks = false;
       return;
     }
-    Utility.gc.fillText(Float.toString(timeLeft), 20, 20);
+    
+    //Utility.gc.fillText(Float.toString(timeLeft), 20, 20);
+    text.setText(Float.toString(timeLeft));
     
     timeLeft -= 1.0f/60;
     if(timeLeft <= 0)
@@ -257,16 +298,17 @@ public class TowerCreateState extends GameState implements ClickResponder
     
     
     
-    
-    
     camera.setLayoutX(camX);
+    //Utility.gc.getCanvas().setLayoutX(camX);
     //camX++;
   }
 
-  @Override
-  void cleanUp()
+  void preCleanUp()
   {
+    System.out.println("CLEANUP");
+    System.out.println("A player: " + playerNum);
     ArrayList<PhysicalGameObject> pgoList = Utility.getPGameObjects(playerNum);
+    System.out.println("B");
     pgoList.clear();
     pgoList.addAll(pGameObjects);
     
@@ -276,6 +318,22 @@ public class TowerCreateState extends GameState implements ClickResponder
       //pgo.getBody().getFixtureList().
     }
     pGameObjects.clear();
+    
+    Utility.root.getChildren().remove(toPlace1);
+    Utility.root.getChildren().remove(toPlace2);
+    Utility.root.getChildren().remove(toPlace3);
+
+    Utility.root.getChildren().remove(measure1);
+    Utility.root.getChildren().remove(measure2);
+    Utility.root.getChildren().remove(measure3);
+    Utility.root.getChildren().remove(measure4);
+    Utility.root.getChildren().remove(measure5);
+    
+    Utility.root.getChildren().remove(text);
   }
+  
+  @Override
+  void cleanUp(){}
+  
   
 }

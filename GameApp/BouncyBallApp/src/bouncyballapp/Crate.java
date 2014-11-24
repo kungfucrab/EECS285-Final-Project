@@ -64,6 +64,8 @@ public class Crate extends PhysicalGameObject implements Serializable
     fxShape.setLayoutX(xpos - width/2);
     fxShape.setLayoutY(ypos - height/2);
     fxShape.setRotate(-180*body.getAngle()/((float) Math.PI));
+    
+    //System.out.println("XPos" + xpos);
   }
   
   public Color createColor()

@@ -14,7 +14,9 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 
@@ -24,6 +26,11 @@ public class PlayGameState extends GameState implements ClickResponder
   
   float mouseX = Utility.WIDTH/2;
   float mouseY = Utility.HEIGHT/2;
+  
+  float startDragX = -1;
+  float startDragY = -1;
+  
+  float MAX_VELOCITY = 75;
   
   Camera camera = new ParallelCamera();
   int camX = 0;
@@ -37,27 +44,42 @@ public class PlayGameState extends GameState implements ClickResponder
   
   boolean canShoot = true;
   
+  PhysicalGameObject trackedBall = null;
+  
+  Line shootLine = new Line();
+
+  
   public PlayGameState()
   {
+    ArrayList<PhysicalGameObject> pgoList1 = Utility.getPGameObjects(1);
+    ArrayList<PhysicalGameObject> pgoList2 = Utility.getPGameObjects(2);
+    
+    for(PhysicalGameObject pgo1 : pgoList1)
+    {
+      pgo1.getBody().setType(BodyType.DYNAMIC);
+      //pgo.getBody().getFixtureList().
+    }
+    for(PhysicalGameObject pgo2 : pgoList2)
+    {
+      pgo2.getBody().setType(BodyType.DYNAMIC);
+      //pgo.getBody().getFixtureList().
+    }
+    
+    shootLine.setFill(Color.BLACK);
+    shootLine.setVisible(false);
+    Utility.root.getChildren().add(shootLine);
     
     Utility.scene.setCamera(camera);
     
     Utility.RegisterForClicks(this);
     Utility.addGround(100, 20);
 
-    //Add left and right walls so balls will not move outside the viewing area.
-    //Utility.addWall(0,100,1,100); //Left wall
-    //Utility.addWall(99,100,1,100); //Right wall
-    
-    final Timeline timeline = new Timeline();
-    timeline.setCycleCount(Timeline.INDEFINITE);
-
-    Duration duration = Duration.seconds(1.0/60.0); // Set duration for frame.
     
     Utility.scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
 
       @Override
       public void handle(KeyEvent t) {
+        //System.out.println("hi");
         if(t.getCode() == KeyCode.SPACE && canSwitch == true)
         {
           if(currentPlayer == 1)
@@ -68,7 +90,7 @@ public class PlayGameState extends GameState implements ClickResponder
             
             camX = 1000;
           }
-          if(currentPlayer == 2)
+          else if(currentPlayer == 2)
           {
             currentPlayer = 1;
             canSwitch = false;
@@ -76,6 +98,9 @@ public class PlayGameState extends GameState implements ClickResponder
             
             camX = 0;
           }
+          
+          startDragX=-1;
+          startDragY=-1;
         }
       }
     });
@@ -85,50 +110,78 @@ public class PlayGameState extends GameState implements ClickResponder
   @Override
   public void onClick(MouseEvent mouseEvent)
   {
-    /*if(!acceptClicks)
+    if(canShoot)
     {
-      if(acceptEggClicks)
+      if(currentPlayer == 1)
       {
-        PhysicalGameObject newPGObject;
-        newPGObject = new Egg(Utility.toPosX((float)mouseEvent.getX())
-                              , Utility.toPosY((float)mouseEvent.getY())
-                              , 25, "Player "+ playerNum);
-        
-        pGameObjects.add(newPGObject);
-        
-        acceptEggClicks = false;
-        
-        eggPlaced = true;
+        //PhysicalGameObject newPGObject;
+        //newPGObject = new Ball(Utility.toPosX(0 + (float)mouseEvent.getX()), Utility.toPosY((float)mouseEvent.getY()), 30, 10, 5);
+        //pGameObjects.add(newPGObject);
         
       }
-      return;
-    }
-    
-    if(mouseEvent.isPrimaryButtonDown())
-    {
-      if(Utility.toPosY((float)mouseEvent.getY()) > 10)
+      if(currentPlayer == 2)
       {
-        PhysicalGameObject newPGObject;
-        newPGObject = new Crate(Utility.toPosX((float)mouseEvent.getX()), Utility.toPosY((float)mouseEvent.getY()), 10, 50);
-        
-        pGameObjects.add(newPGObject);
+        //PhysicalGameObject newPGObject;
+        //newPGObject = new Ball(Utility.toPosX(0 + (float)mouseEvent.getX()), Utility.toPosY((float)mouseEvent.getY()), -30, 10, 5);
+        //pGameObjects.add(newPGObject);
       }
-    }
-    else if(mouseEvent.isSecondaryButtonDown())
-    {
-      PhysicalGameObject newPGObject;
-      newPGObject = new Crate(Utility.toPosX((float)mouseEvent.getX()), Utility.toPosY((float)mouseEvent.getY()), 50, 10);
       
-      pGameObjects.add(newPGObject);
-    }
-    else if(mouseEvent.isMiddleButtonDown())
-    {
-     //PhysicalGameObject newPGObject;
-      //newPGObject = new Ball(Utility.toPosX((float)mouseEvent.getX()), Utility.toPosY((float)mouseEvent.getY()), 25);
+      shootLine.setStartX(mouseEvent.getX());
+      shootLine.setStartY(mouseEvent.getY());
+      shootLine.setEndX(mouseEvent.getX());
+      shootLine.setEndY(mouseEvent.getY());
+      shootLine.setVisible(true);
       
-      //pGameObjects.add(newPGObject);
-    }*/
+      
+      startDragX = (float) mouseEvent.getX();
+      startDragY = (float) mouseEvent.getY();
+      //canSwitch = true;
+      //canShoot = false;
+    }
   }
+  
+  @Override
+  public void onRelease(MouseEvent mouseEvent)
+  {
+    if(canShoot && startDragX > 0 && startDragY > 0)
+    {
+      float velocityX = .5f*(float) (mouseEvent.getX() - startDragX);
+      float velocityY = -.5f*(float) (mouseEvent.getY() - startDragY);
+      
+      float vMag = (float) Math.sqrt(velocityX*velocityX + velocityY*velocityY);
+      
+      if(vMag > MAX_VELOCITY)
+      {
+        velocityX = velocityX * MAX_VELOCITY / vMag;
+        velocityY = velocityY * MAX_VELOCITY / vMag;
+      }
+      
+      if(currentPlayer == 1)
+      {
+        PhysicalGameObject newPGObject;
+        newPGObject = new Ball(Utility.toPosX(0 + (float)mouseEvent.getX()), Utility.toPosY((float)mouseEvent.getY()), velocityX, velocityY, 5);
+        pGameObjects.add(newPGObject);
+        
+        trackedBall = newPGObject;
+        
+      }
+      if(currentPlayer == 2)
+      {
+        PhysicalGameObject newPGObject;
+        newPGObject = new Ball(Utility.toPosX(0 + (float)mouseEvent.getX()), Utility.toPosY((float)mouseEvent.getY()), velocityX, velocityY, 5);
+        pGameObjects.add(newPGObject);
+        
+        trackedBall = newPGObject;
+      }
+      
+      canSwitch = true;
+      canShoot = false;
+      
+      shootLine.setVisible(false);
+    }
+  }
+  
+  
 
   @Override
   void update()
@@ -138,6 +191,32 @@ public class PlayGameState extends GameState implements ClickResponder
     
     mouseX = (float) Utility.mousePosition.getX();
     mouseY = (float) Utility.mousePosition.getY();
+    
+    if(canShoot && startDragX > 0 && startDragY > 0)
+    {
+      float magX = (float) (mouseX - startDragX);
+      float magY = (float) (mouseY - startDragY);
+      
+      if(canShoot && startDragX > 0 && startDragY > 0)
+      {
+        
+        float vMag = (float) Math.sqrt(magX*magX + magY*magY);
+        
+        if(vMag > MAX_VELOCITY)
+        {
+          magX = magX * MAX_VELOCITY / vMag;
+          magY = magY * MAX_VELOCITY / vMag;
+        }
+      }
+      
+      shootLine.setVisible(true);
+      shootLine.setEndX(startDragX + magX);
+      shootLine.setEndY(startDragY + magY);
+    }
+    else
+    {
+      shootLine.setVisible(false);
+    }
     
     
     for(PhysicalGameObject pgObject : Utility.getPGameObjects(1))
@@ -149,6 +228,11 @@ public class PlayGameState extends GameState implements ClickResponder
       pgObject.update();
     }
     
+    for(PhysicalGameObject pgObject : pGameObjects)
+    {
+      pgObject.update();
+    }
+    
     
     
     //Utility.gc.fillText(Float.toString(timeLeft), 20, 20);
@@ -156,8 +240,13 @@ public class PlayGameState extends GameState implements ClickResponder
     
     
     
-    
+    if(canSwitch && !canShoot)
+    {
+      camX = (int) (.99*camX + .01*(trackedBall.getfxShape().getLayoutX() + Utility.toPixelWidth(trackedBall.getBody().getLinearVelocity().x) - Utility.WIDTH/2));
+      System.out.println("camX" + camX);
+    }
     camera.setLayoutX(camX);
+    
     //camX++;
   }
 

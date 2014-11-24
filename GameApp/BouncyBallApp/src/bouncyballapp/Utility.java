@@ -43,7 +43,8 @@ public class Utility
   
   public static Point2D mousePosition = new Point2D(0, 0);
   
-  private static Vector<ClickResponder> clickResponders = new Vector<ClickResponder>();
+  private static Vector<ClickResponder> clickDownResponders = new Vector<ClickResponder>();
+  private static Vector<ClickResponder> clickUpResponders = new Vector<ClickResponder>();
   public static Vector<TickResponder> tickResponders = new Vector<TickResponder>();
   
   private static String player1Username;
@@ -135,24 +136,32 @@ public class Utility
   
   public static void RegisterForClicks(ClickResponder clickResponder)
   {
-    synchronized(clickResponders)
+    synchronized(clickDownResponders)
     {
-      clickResponders.add(clickResponder);
+      clickDownResponders.add(clickResponder);
+    }
+    synchronized(clickUpResponders)
+    {
+      clickUpResponders.add(clickResponder);
     }
   }
   public static synchronized void UnregisterForClicks(ClickResponder clickResponder)
   {
-    synchronized(clickResponders)
+    synchronized(clickDownResponders)
     {
-      clickResponders.remove(clickResponder);
+      clickDownResponders.remove(clickResponder);
+    }
+    synchronized(clickUpResponders)
+    {
+      clickUpResponders.remove(clickResponder);
     }
   }
   public static synchronized void fireClickResponders(MouseEvent mouseEvent)
   {
-    synchronized(clickResponders)
+    synchronized(clickDownResponders)
     {
       Vector<ClickResponder> copyVec;
-      copyVec = (Vector<ClickResponder>)clickResponders.clone();
+      copyVec = (Vector<ClickResponder>)clickDownResponders.clone();
 
       for(int i = 0; i < copyVec.size(); i++)
       {
@@ -161,16 +170,36 @@ public class Utility
     }
   }
   
+  public static synchronized void fireReleaseResponders(MouseEvent mouseEvent)  
+  {
+    synchronized(clickUpResponders)
+    {
+      Vector<ClickResponder> copyVec;
+      copyVec = (Vector<ClickResponder>)clickUpResponders.clone();
+
+      for(int i = 0; i < copyVec.size(); i++)
+      {
+        copyVec.get(i).onRelease(mouseEvent);
+      }
+    }
+  }
+  
   public static ArrayList<PhysicalGameObject> getPGameObjects(int playerNum)
   {
     if(playerNum == 1)
     {
+      //System.out.println("player 1 list");
       return pGameObjects1;
+    }
+    else if(playerNum == 2)
+    {
+      //System.out.println("player 2 list");
+      return pGameObjects2;
     }
     else
     {
-      return pGameObjects2;
+      System.exit(1);
+      return new ArrayList<PhysicalGameObject>();
     }
-    //return new ArrayList<PhysicalGameObject>();
   }
 }

@@ -130,6 +130,10 @@ public class MenuState extends GameState implements ClickResponder
       }
     }
   }
+  public void onRelease(MouseEvent _)
+  {
+    
+  }
   
   public void update()
   {
