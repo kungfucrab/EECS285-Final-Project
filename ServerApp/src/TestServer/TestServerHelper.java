@@ -29,6 +29,7 @@ public class TestServerHelper {
 		System.out.println(dict.get("loses"));
 		System.out.println(dict.get("wins"));
 		
-		
+		//add new tower for user
+		System.out.println(ServerHelper.addNewUserTower("bob", "legotower", "towerdatayoyo"));
 	}
 }

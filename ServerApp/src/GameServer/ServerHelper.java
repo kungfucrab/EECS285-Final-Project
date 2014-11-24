@@ -121,7 +121,7 @@ public class ServerHelper {
 				connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded;charset=" + charset);
 
 				try (OutputStream output = connection.getOutputStream()) {
-				    output.write(query.getBytes(charset));
+				    output.write(postQuery.getBytes(charset));
 				}
 
 				response = connection.getInputStream();
@@ -175,6 +175,48 @@ public class ServerHelper {
 		
 		return dict;
 	}
+
+//------------------------------------------------------------------------------------------------
+	
+	public static Boolean addNewUserTower(String username, String towername, String towerDataInput) {
+		String url = baseurl + "/AddNewTower/";
+		
+		try {
+			String postQuery = "username=" + 
+				     URLEncoder.encode(username, charset);
+			postQuery += "&towername=" + 
+				     URLEncoder.encode(towername, charset);
+			postQuery += "&towerdata=" + 
+				     URLEncoder.encode(towerDataToString(towerDataInput), charset);
+			
+			URLConnection connection = new URL(url + "?" + postQuery).openConnection();
+			connection.setDoOutput(true); // Triggers POST.
+			connection.setRequestProperty("Accept-Charset", charset);
+			connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded;charset=" + charset);
+	
+			try (OutputStream output = connection.getOutputStream()) {
+			    output.write(postQuery.getBytes(charset));
+			}
+	
+			InputStream response = connection.getInputStream();
+			String data = getStringFromInputStream(response);
+			
+			if(data.equals("Tower Insert Success")) {
+				return true;
+			}
+			else {
+				System.out.println(data);
+				return false;
+			}
+		}
+		catch(Exception e) {
+			System.out.println(e.toString());
+		}
+		
+
+		return false;
+	}
+
 	
 //------------------------------------------------------------------------------------------------
 
