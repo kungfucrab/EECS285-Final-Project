@@ -266,8 +266,8 @@ public class Utility
   {
     for(PhysicalGameObject pgo : pGameObjects)
     {
-      Utility.root.getChildren().remove(pgo);
-      Utility.world.destroyBody(pgo.getBody());
+      //Utility.root.getChildren().remove(pgo);
+      //Utility.world.destroyBody(pgo.getBody());
       pgo.deleteComponents();
     }
     pGameObjects.clear();
