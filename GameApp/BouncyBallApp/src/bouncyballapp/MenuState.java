@@ -4,12 +4,17 @@ import java.util.HashMap;
 import java.awt.event.*;
 
 import javafx.event.*;
+import javafx.scene.Camera;
+import javafx.scene.ParallelCamera;
 import javafx.scene.input.MouseEvent;
 import javafx.geometry.Point2D;
 import bouncyballapp.TowerCreateState;
 
 public class MenuState extends GameState implements ClickResponder
 {
+  
+  Camera camera = new ParallelCamera();
+  
   public abstract class MenuChoice
   {
     protected boolean highlighted = false;
@@ -110,6 +115,9 @@ public class MenuState extends GameState implements ClickResponder
   {
     synchronized(choices)
     {
+      Utility.scene.setCamera(camera);
+      camera.setLayoutX(0);
+      
       choices.put(0, new ArcadeMenuChoice());
       choices.put(1, new GalleryMenuChoice());
       choices.put(2, new ProfileMenuChoice());

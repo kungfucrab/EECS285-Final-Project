@@ -27,6 +27,16 @@ public class Crate extends PhysicalGameObject implements Serializable
     init(x, y);
   }
   
+  public Crate(float x, float y, int width, int height, float angle)
+  {
+    this.width = width;
+    this.height = height;
+    
+    init(x, y);
+    
+    this.getBody().setTransform(this.getBody().getPosition(), angle);
+  }
+  
   public Shape createFXShape()
   {
     Rectangle r = new Rectangle();
@@ -87,5 +97,14 @@ public class Crate extends PhysicalGameObject implements Serializable
   public void initViaStringRepresentation(String rep)
   {
     // Implement me.
+  }
+  
+  public int getWidth()
+  {
+    return width;
+  }
+  public int getHeight()
+  {
+    return height;
   }
 }

@@ -23,7 +23,18 @@ public abstract class PhysicalGameObject implements Serializable
     BodyDef bd = createBodyDef(x, y);
     FixtureDef fd = createFixtureDef();
     
+    
     body = Utility.world.createBody(bd);
+    
+    if(body == null)
+    {
+      System.out.println("null body");
+    }
+    if(fd == null)
+    {
+      System.out.println("null fd");
+    }
+    
     body.createFixture(fd);
     
     Utility.root.getChildren().add(fxShape);
@@ -54,5 +65,18 @@ public abstract class PhysicalGameObject implements Serializable
     bd.type = BodyType.DYNAMIC;
     bd.position.set(x, y);
     return bd;
+  }
+  
+  public void deleteComponents()
+  {
+    
+    Utility.root.getChildren().remove(fxShape);
+    Utility.world.destroyBody(body);
+    
+    //body.setUserData(null);
+    //fxShape.setUserData(null);
+    
+    //Utility.root.getChildren().remove(this);
+    //this.Destroy();
   }
 }

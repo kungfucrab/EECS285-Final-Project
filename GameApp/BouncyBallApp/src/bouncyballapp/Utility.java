@@ -27,11 +27,13 @@ public class Utility
   public static final World world = new World(new Vec2(0.0f, -10.0f));
    
   //Screen width and height
-  public static final int WIDTH = 1000;//600;
-  public static final int HEIGHT = 1000;
+  public static final int WIDTH = 650;//600;
+  public static final int HEIGHT = 650;
    
   //Ball radius in pixel
   public static final int BALL_RADIUS = 8;
+  
+  public static final int LAVA_HEIGHT = 50;
   
   static Group root;
   static Scene scene;
@@ -200,6 +202,90 @@ public class Utility
     {
       System.exit(1);
       return new ArrayList<PhysicalGameObject>();
+    }
+  }
+  
+  public static String getTowerString(ArrayList<PhysicalGameObject> pgos, int offset)
+  {
+    String out = "";
+    for(PhysicalGameObject pgo : pgos)
+    {
+      if(pgo instanceof Crate)
+      {
+        out += "C " + (pgo.getBody().getPosition().x - offset) + " "
+                + pgo.getBody().getPosition().y + " "
+                + ((Crate)pgo).getWidth() + " "
+                + ((Crate)pgo).getHeight() + " "
+                + pgo.getBody().getAngle() + ";";
+      }
+      else if(pgo instanceof Egg)
+      {
+        out += "E " + (pgo.getBody().getPosition().x - offset) + " "
+                + pgo.getBody().getPosition().y + " "
+                + ((Egg)pgo).getRadius() + ";";
+      }
+    }
+    
+    return out;
+  }
+  
+  public static void parseTowerString(String towerString, ArrayList<PhysicalGameObject> pgos, int offset, String playerName)
+  {
+    String[] gameObjectStrings = (towerString.split(";"));
+    
+    //ArrayList<PhysicalGameObject> pgos = new ArrayList<PhysicalGameObject>();
+    
+    
+    for(String s : gameObjectStrings)
+    {
+      String[] vals = s.split(" ");
+      if(vals[0].equals("E"))
+      {
+        float xCoord = Float.parseFloat(vals[1]);
+        float yCoord = Float.parseFloat(vals[2]);
+        int radius = Integer.parseInt(vals[3]);
+        
+        pgos.add(new Egg(xCoord, yCoord, radius, playerName));
+      }
+      else if(vals[0].equals("C"))
+      {
+        float xCoord = Float.parseFloat(vals[1]);
+        float yCoord = Float.parseFloat(vals[2]);
+        int width = Integer.parseInt(vals[3]);
+        int height = Integer.parseInt(vals[4]);
+        float angle = Float.parseFloat(vals[5]);
+        
+        pgos.add(new Crate(xCoord, yCoord, width, height, angle));
+      }
+    }
+    
+    //return pgos;
+  }
+  
+  public static void destroyAllObjects(ArrayList<PhysicalGameObject> pGameObjects)
+  {
+    for(PhysicalGameObject pgo : pGameObjects)
+    {
+      Utility.root.getChildren().remove(pgo);
+      Utility.world.destroyBody(pgo.getBody());
+      pgo.deleteComponents();
+    }
+    pGameObjects.clear();
+  }
+  
+  public static String getPlayerName(int playerNum)
+  {
+    if(playerNum == 1)
+    {
+      return player1Username;
+    }
+    if(playerNum == 2)
+    {
+      return player2Username;
+    }
+    else
+    {
+      return "";
     }
   }
 }

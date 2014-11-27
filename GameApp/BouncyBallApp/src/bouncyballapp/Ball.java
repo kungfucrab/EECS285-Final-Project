@@ -45,7 +45,7 @@ public class Ball extends PhysicalGameObject implements Serializable
   public org.jbox2d.collision.shapes.Shape createShape()
   {
     org.jbox2d.collision.shapes.Shape cs = new CircleShape();
-    cs.setRadius(.1f*this.radius);
+    cs.setRadius(.15f*this.radius);
     //ps.setAsBox(.1f*this.radius/2, .1f*this.radius/2);
     return cs;
   }
@@ -54,7 +54,7 @@ public class Ball extends PhysicalGameObject implements Serializable
   {
     FixtureDef fd = new FixtureDef();
     fd.shape = createShape();
-    fd.density = 0.6f;
+    fd.density = 1.4f;
     fd.friction = 0.3f;
     return fd;
   }
