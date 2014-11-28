@@ -88,13 +88,23 @@ public class BouncyBallApp extends Application {
 
     
     Utility.scene.addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() 
-    {
-      @Override
-      public void handle(MouseEvent mouseEvent) 
-      {
-        Utility.fireClickResponders(mouseEvent);
-      }
-    });
+        {
+          @Override
+          public void handle(MouseEvent mouseEvent) 
+          {
+            Utility.fireClickResponders(mouseEvent);
+          }
+        });
+    
+    Utility.scene.addEventFilter(MouseEvent.MOUSE_RELEASED, new EventHandler<MouseEvent>() 
+        {
+          @Override
+          public void handle(MouseEvent mouseEvent) 
+          {
+            Utility.fireReleaseResponders(mouseEvent);
+          }
+        });
+    
     Utility.scene.addEventFilter(MouseEvent.ANY, new EventHandler<MouseEvent>() {
       @Override
       public void handle(MouseEvent mouseEvent) {

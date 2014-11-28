@@ -19,6 +19,8 @@ public class Egg extends PhysicalGameObject implements Serializable
   
   private int radius;
   
+  boolean isDestroyed;
+  
   private String playerName;
   /*
    * x and y are specified in box2d coordinates.
@@ -44,7 +46,7 @@ public class Egg extends PhysicalGameObject implements Serializable
   public org.jbox2d.collision.shapes.Shape createShape()
   {
     org.jbox2d.collision.shapes.Shape cs = new CircleShape();
-    cs.setRadius(.1f*this.radius);
+    cs.setRadius(.15f*this.radius);
     //ps.setAsBox(.1f*this.radius/2, .1f*this.radius/2);
     return cs;
   }
@@ -53,7 +55,7 @@ public class Egg extends PhysicalGameObject implements Serializable
   {
     FixtureDef fd = new FixtureDef();
     fd.shape = createShape();
-    fd.density = 0.6f;
+    fd.density = .6f;
     fd.friction = 0.3f;
     return fd;
   }
@@ -88,5 +90,27 @@ public class Egg extends PhysicalGameObject implements Serializable
   public void initViaStringRepresentation(String rep)
   {
     // Implement me.
+  }
+  
+  public int getRadius()
+  {
+    return radius;
+  }
+  
+  public boolean getIsDestroyed()
+  {
+    if(isDestroyed)
+    {
+      return true;
+    }
+    else if(this.getfxShape().getLayoutY() + radius > Utility.HEIGHT - Utility.LAVA_HEIGHT_BASE)
+    {
+      isDestroyed = true;
+      return true;
+    }
+    else
+    {
+      return false;
+    }
   }
 }

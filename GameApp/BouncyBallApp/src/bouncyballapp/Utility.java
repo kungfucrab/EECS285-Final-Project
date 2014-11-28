@@ -29,11 +29,18 @@ public class Utility
   public static final World world = new World(new Vec2(0.0f, -10.0f));
    
   //Screen width and height
-  public static final int WIDTH = 1000;//600;
-  public static final int HEIGHT = 1000;
+  public static final int WIDTH = 650;//600;
+  public static final int HEIGHT = 650;
    
   //Ball radius in pixel
   public static final int BALL_RADIUS = 8;
+  
+  // LAVA
+  public static final int LAVA_HEIGHT_BASE = 50;
+  public static double LAVA_ANIMATION_SPEED = 0.05;
+  public static double LAVA_AMPLITUDE = 2;
+  public static double lava_animation_frame = 0; // Lava Animation
+  
   
   static Group root;
   static Scene scene;
@@ -46,11 +53,14 @@ public class Utility
   
   public static Point2D mousePosition = new Point2D(0, 0);
   
-  private static Vector<ClickResponder> clickResponders = new Vector<ClickResponder>();
+  private static Vector<ClickResponder> clickDownResponders = new Vector<ClickResponder>();
+  private static Vector<ClickResponder> clickUpResponders = new Vector<ClickResponder>();
   public static Vector<TickResponder> tickResponders = new Vector<TickResponder>();
   
   public static String player1Username = "";
   public static String player2Username = "";
+  public static String player1TowerName = "";
+  public static String player2TowerName = "";
   
   private static ArrayList<PhysicalGameObject> pGameObjects1 = new ArrayList<PhysicalGameObject>();
   private static ArrayList<PhysicalGameObject> pGameObjects2 = new ArrayList<PhysicalGameObject>();
@@ -138,24 +148,32 @@ public class Utility
   
   public static void RegisterForClicks(ClickResponder clickResponder)
   {
-    synchronized(clickResponders)
+    synchronized(clickDownResponders)
     {
-      clickResponders.add(clickResponder);
+      clickDownResponders.add(clickResponder);
+    }
+    synchronized(clickUpResponders)
+    {
+      clickUpResponders.add(clickResponder);
     }
   }
   public static synchronized void UnregisterForClicks(ClickResponder clickResponder)
   {
-    synchronized(clickResponders)
+    synchronized(clickDownResponders)
     {
-      clickResponders.remove(clickResponder);
+      clickDownResponders.remove(clickResponder);
+    }
+    synchronized(clickUpResponders)
+    {
+      clickUpResponders.remove(clickResponder);
     }
   }
   public static synchronized void fireClickResponders(MouseEvent mouseEvent)
   {
-    synchronized(clickResponders)
+    synchronized(clickDownResponders)
     {
       Vector<ClickResponder> copyVec;
-      copyVec = (Vector<ClickResponder>)clickResponders.clone();
+      copyVec = (Vector<ClickResponder>)clickDownResponders.clone();
 
       for(int i = 0; i < copyVec.size(); i++)
       {
@@ -164,16 +182,120 @@ public class Utility
     }
   }
   
+  public static synchronized void fireReleaseResponders(MouseEvent mouseEvent)  
+  {
+    synchronized(clickUpResponders)
+    {
+      Vector<ClickResponder> copyVec;
+      copyVec = (Vector<ClickResponder>)clickUpResponders.clone();
+
+      for(int i = 0; i < copyVec.size(); i++)
+      {
+        copyVec.get(i).onRelease(mouseEvent);
+      }
+    }
+  }
+  
   public static ArrayList<PhysicalGameObject> getPGameObjects(int playerNum)
   {
     if(playerNum == 1)
     {
+      //System.out.println("player 1 list");
       return pGameObjects1;
+    }
+    else if(playerNum == 2)
+    {
+      //System.out.println("player 2 list");
+      return pGameObjects2;
     }
     else
     {
-      return pGameObjects2;
+      System.exit(1);
+      return new ArrayList<PhysicalGameObject>();
     }
-    //return new ArrayList<PhysicalGameObject>();
+  }
+  
+  public static String getTowerString(ArrayList<PhysicalGameObject> pgos, int offset)
+  {
+    String out = "";
+    for(PhysicalGameObject pgo : pgos)
+    {
+      if(pgo instanceof Crate)
+      {
+        out += "C " + (pgo.getBody().getPosition().x - offset) + " "
+                + pgo.getBody().getPosition().y + " "
+                + ((Crate)pgo).getWidth() + " "
+                + ((Crate)pgo).getHeight() + " "
+                + pgo.getBody().getAngle() + ";";
+      }
+      else if(pgo instanceof Egg)
+      {
+        out += "E " + (pgo.getBody().getPosition().x - offset) + " "
+                + pgo.getBody().getPosition().y + " "
+                + ((Egg)pgo).getRadius() + ";";
+      }
+    }
+    
+    return out;
+  }
+  
+  public static void parseTowerString(String towerString, ArrayList<PhysicalGameObject> pgos, int offset, String playerName)
+  {
+    String[] gameObjectStrings = (towerString.split(";"));
+    
+    //ArrayList<PhysicalGameObject> pgos = new ArrayList<PhysicalGameObject>();
+    
+    
+    for(String s : gameObjectStrings)
+    {
+      String[] vals = s.split(" ");
+      if(vals[0].equals("E"))
+      {
+        float xCoord = Float.parseFloat(vals[1]);
+        float yCoord = Float.parseFloat(vals[2]);
+        int radius = Integer.parseInt(vals[3]);
+        
+        pgos.add(new Egg(xCoord, yCoord, radius, playerName));
+      }
+      else if(vals[0].equals("C"))
+      {
+        float xCoord = Float.parseFloat(vals[1]);
+        float yCoord = Float.parseFloat(vals[2]);
+        int width = Integer.parseInt(vals[3]);
+        int height = Integer.parseInt(vals[4]);
+        float angle = Float.parseFloat(vals[5]);
+        
+        pgos.add(new Crate(xCoord, yCoord, width, height, angle));
+      }
+    }
+    
+    //return pgos;
+  }
+  
+  public static void destroyAllObjects(ArrayList<PhysicalGameObject> pGameObjects)
+  {
+    for(PhysicalGameObject pgo : pGameObjects)
+    {
+      //Utility.root.getChildren().remove(pgo);
+      //Utility.world.destroyBody(pgo.getBody());
+      pgo.deleteComponents();
+    }
+    pGameObjects.clear();
+  }
+  
+  public static String getPlayerName(int playerNum)
+  {
+    if(playerNum == 1)
+    {
+      return player1Username;
+    }
+    if(playerNum == 2)
+    {
+      return player2Username;
+    }
+    else
+    {
+      return "";
+    }
   }
 }

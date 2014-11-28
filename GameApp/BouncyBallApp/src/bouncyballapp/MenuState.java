@@ -7,20 +7,32 @@ import javax.swing.JOptionPane;
 
 import javafx.event.*;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.Camera;
+import javafx.scene.ParallelCamera;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.geometry.Point2D;
 import bouncyballapp.TowerCreateState;
+import GameServer.*;
 
 public class MenuState extends GameState implements ClickResponder
 {
+  VBox playerBoxes;
+  
   Label messageLabel;
   Label player1Label;
   Label player2Label;
+  
+  Text displayText;
+  
+  Camera camera = new ParallelCamera();
   
   public abstract class MenuChoice
   {
@@ -48,11 +60,11 @@ public class MenuState extends GameState implements ClickResponder
     }
   }
   
-  public class ArcadeMenuChoice extends MenuChoice
+  public class PlayMenuChoice extends MenuChoice
   {
-    public ArcadeMenuChoice()
+    public PlayMenuChoice()
     {
-      text = new BouncyText("Arcade Mode", 100, 200, 20);
+      text = new BouncyText("Play", 25, 150, 20);
     }
     
     public void onClick()
@@ -60,7 +72,13 @@ public class MenuState extends GameState implements ClickResponder
       if(highlighted)
       {
         if(!Utility.player1Username.isEmpty())
+        {
+          ServerHelper.userLogin(Utility.player1Username);
+          if(!Utility.player2Username.isEmpty())
+            ServerHelper.userLogin(Utility.player2Username);
+          
           Utility.transitionGameState(new TowerCreateState(1));
+        }
         else
         {
           messageLabel.setText("Please specify Player 1's username!");
@@ -71,16 +89,26 @@ public class MenuState extends GameState implements ClickResponder
     }
   }
   
-  public class GalleryMenuChoice extends MenuChoice
+  public class UserTowersChoice extends MenuChoice
   { 
-    public GalleryMenuChoice()
+    public UserTowersChoice()
     {
-      text = new BouncyText("Gallery", 100, 250, 20);
+      text = new BouncyText("View Towers", 25, 200, 20);
     }
     
     public void onClick()
     {
-      
+      if(highlighted)
+      {
+        if(!Utility.player1Username.isEmpty())
+          displayText.setText(ServerHelper.getUserTowers(Utility.player1Username));
+        else
+        {
+          messageLabel.setText("Please specify Player 1's username!");
+          messageLabel.setTextFill(Color.RED);
+          messageLabel.setFont(new Font("Arial", 30));
+        }
+      }
     }
   }
   
@@ -88,7 +116,7 @@ public class MenuState extends GameState implements ClickResponder
   { 
     public ProfileMenuChoice()
     {
-      text = new BouncyText("Profile", 100, 300, 20);
+      text = new BouncyText("Profile", 25, 250, 20);
     }
     
     public void onClick()
@@ -101,7 +129,7 @@ public class MenuState extends GameState implements ClickResponder
   {
     public CreditsMenuChoice()
     {
-      text = new BouncyText("Credits", 100, 350, 20);
+      text = new BouncyText("Credits", 25, 250, 20);
     }
     
     public void onClick()
@@ -109,9 +137,8 @@ public class MenuState extends GameState implements ClickResponder
       if(highlighted)
       {
         String creditsMessage = "Developed by\nSebastian Martinez,\nTomas Medina Inchauste,"
-            + "\nThomas Seidel,\nand Austin Yarger. Developed for EECS 285, F14, University of Michigan, Ann Arbor.";
-        
-        JOptionPane.showMessageDialog(null, creditsMessage);
+            + "\nThomas Seidel,\nand Austin Yarger. \nDeveloped for EECS 285, F14, University of Michigan, Ann Arbor.";
+        displayText.setText(creditsMessage);
       }
     }
   }
@@ -120,7 +147,7 @@ public class MenuState extends GameState implements ClickResponder
   { 
     public QuitMenuChoice()
     {
-      text = new BouncyText("Quit", 100, 400, 20);
+      text = new BouncyText("Quit", 25, 300, 20);
     }
     
     public void onClick()
@@ -137,9 +164,11 @@ public class MenuState extends GameState implements ClickResponder
   { 
     synchronized(choices)
     {
-      choices.put(0, new ArcadeMenuChoice());
-      choices.put(3, new GalleryMenuChoice());
-      choices.put(4, new ProfileMenuChoice());
+      Utility.scene.setCamera(camera);
+      camera.setLayoutX(0);
+      
+      choices.put(0, new PlayMenuChoice());
+      choices.put(3, new UserTowersChoice());
       choices.put(5, new CreditsMenuChoice());
       choices.put(6, new QuitMenuChoice());
     }
@@ -148,12 +177,12 @@ public class MenuState extends GameState implements ClickResponder
     // Username Entry.
     player1Label = new Label("Player 1 Username:");
     player2Label = new Label("Player 2 Username:");
-    messageLabel = new Label("Please enter a username. Enter 2 to play multiplayer!");
+    messageLabel = new Label("Please enter a username. Enter 2 names to play multiplayer!");
     TextField player1TextField = new TextField ();
     TextField player2TextField = new TextField ();
     HBox hbPlayer1 = new HBox();
     HBox hbPlayer2 = new HBox();
-    VBox playerBoxes = new VBox();
+    playerBoxes = new VBox();
     hbPlayer1.getChildren().addAll(player1Label, player1TextField);
     hbPlayer1.setSpacing(10);
     hbPlayer2.getChildren().addAll(player2Label, player2TextField);
@@ -166,10 +195,25 @@ public class MenuState extends GameState implements ClickResponder
     // Update the stored usernames as users type.
     player1TextField.textProperty().addListener((observable, oldValue, newValue) -> {
       Utility.player1Username = newValue;
+      messageLabel.setText("Please enter a username. Enter 2 names to play multiplayer!");
     });
     player2TextField.textProperty().addListener((observable, oldValue, newValue) -> {
       Utility.player2Username = newValue;
+      messageLabel.setText("Please enter a username. Enter 2 names to play multiplayer!");
     });
+    
+    
+    // Text Area RIGHT
+    BorderPane borderPane = new BorderPane();
+    Text leaderboardText = new Text("LEADERBOARDS\n" + ServerHelper.getLeaderboard());
+    borderPane.setRight(leaderboardText);
+    borderPane.setPrefSize(600,600);
+    
+    Utility.root.getChildren().add(borderPane);
+    
+    // Text Area BOTTOM
+    displayText = new Text();
+    borderPane.setBottom(displayText);
   }
   
   public void onClick(MouseEvent _)
@@ -182,6 +226,10 @@ public class MenuState extends GameState implements ClickResponder
         m.onClick();
       }
     }
+  }
+  public void onRelease(MouseEvent _)
+  {
+    
   }
   
   public void update()
@@ -209,9 +257,7 @@ public class MenuState extends GameState implements ClickResponder
       Utility.gc.clearRect(0, 0, Utility.WIDTH, Utility.HEIGHT);
       
       // Label and text fields.
-      Utility.root.getChildren().remove(messageLabel);
-      Utility.root.getChildren().remove(player1Label);
-      Utility.root.getChildren().remove(player2Label);
+      Utility.root.getChildren().remove(playerBoxes);
     }
   }
 }

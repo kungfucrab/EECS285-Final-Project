@@ -38,11 +38,11 @@ public class ScoresServlet extends HttpServlet
 		    			score = rs.getInt("score");
 		    			username = rs.getString("username");
 		    		}
-		    		Dictionary dict = new Hashtable();
-		    		dict.put("username", username);
-		    		dict.put("score", Integer.toString(score));
-		    		out.println(dict);
-		    		
+//		    		Dictionary dict = new Hashtable();
+//		    		dict.put("username", username);
+//		    		dict.put("score", Integer.toString(score));
+//		    		out.println(dict);
+		    		out.println(Integer.toString(score));
 		    	}
 		    	catch (SQLException e ) {
 		    		System.out.println(e.toString());
@@ -62,9 +62,9 @@ public class ScoresServlet extends HttpServlet
 	    }
 	    //get all scores
 	    else {
-	    	ArrayList al = new ArrayList();
+	    	String leaderBoard = "";
 	    	
-	    	String query = "SELECT score, username FROM users;";
+	    	String query = "SELECT score, username FROM users ORDER BY score DESC;";
 	    	try {
 	    		Class.forName("com.mysql.jdbc.Driver").newInstance();
 		    	conn = DriverManager.getConnection(GameServerMain.server, GameServerMain.serverUsername, GameServerMain.serverPassword);
@@ -79,14 +79,10 @@ public class ScoresServlet extends HttpServlet
 		    		while(rs.next()) {
 		    			score = rs.getInt(1);
 		    			username = rs.getString(2);
-		    			
-		    			Dictionary dict = new Hashtable();
-			    		dict.put("username", username);
-			    		dict.put("score", Integer.toString(score));
-			    		
-			    		al.add(dict);
+
+			    		leaderBoard = leaderBoard + username + " " + Integer.toString(score) + ";";
 		    		}
-		    		out.println(al);
+		    		out.println(leaderBoard);
 		    		
 		    	}
 		    	catch (SQLException e ) {
