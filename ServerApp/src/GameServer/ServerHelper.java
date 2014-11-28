@@ -190,7 +190,11 @@ public class ServerHelper {
 			InputStream response = connection.getInputStream();
 			String data = getStringFromInputStream(response);
 
-			String[] parts = data.split(";");
+			String[] parts = data.split("@");
+			
+			System.out.println("inside the serer helper");
+			System.out.println(parts[3]);
+			System.out.println("............");
 			
     		dict.put("towername", parts[0]);
     		dict.put("towerdata", (parts[3]));

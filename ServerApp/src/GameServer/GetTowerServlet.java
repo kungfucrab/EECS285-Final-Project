@@ -97,8 +97,8 @@ public class GetTowerServlet extends HttpServlet {
 //			    		dict.put("loses", Integer.toString(loses));
 //			    		dict.put("towerdata", towerdata);
 //			    		out.println(dict);
-			    		String tower = towername + ";" + Integer.toString(wins) + ";" + Integer.toString(loses) 
-			    				+ ";" + towerdata;
+			    		String tower = towername + "@" + Integer.toString(wins) + "@" + Integer.toString(loses) 
+			    				+ "@" + towerdata;
 
 			    		out.println(tower);
 			    	}
