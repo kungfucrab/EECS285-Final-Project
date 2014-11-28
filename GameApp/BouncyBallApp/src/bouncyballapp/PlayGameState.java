@@ -157,7 +157,7 @@ public class PlayGameState extends GameState implements ClickResponder
     
     
     
-    camera.setLayoutX(camX);
+    //camera.setLayoutX(camX);
     //camX++;
   }
 

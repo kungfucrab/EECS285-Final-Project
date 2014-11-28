@@ -259,7 +259,7 @@ public class TowerCreateState extends GameState implements ClickResponder
     
     
     
-    camera.setLayoutX(camX);
+    //camera.setLayoutX(camX);
     //camX++;
   }
 

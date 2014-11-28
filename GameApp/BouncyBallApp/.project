@@ -20,4 +20,11 @@
 		<nature>org.eclipse.xtext.ui.shared.xtextNature</nature>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>src/GameServer</name>
+			<type>2</type>
+			<locationURI>PARENT-2-PROJECT_LOC/ServerApp/src/GameServer</locationURI>
+		</link>
+	</linkedResources>
 </projectDescription>

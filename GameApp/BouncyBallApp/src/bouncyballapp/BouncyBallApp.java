@@ -44,6 +44,7 @@ public class BouncyBallApp extends Application {
     
     Utility.root = new Group();
     Utility.scene = new Scene(Utility.root, Utility.WIDTH, Utility.HEIGHT);
+    Utility.stage = primaryStage;
     
     //Utility.scene.setCamera(camera);
     //Group cameraGroup = new Group();

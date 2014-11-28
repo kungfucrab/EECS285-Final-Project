@@ -1,11 +1,13 @@
 package bouncyballapp;
 
 import javafx.scene.Group;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.geometry.Point2D;
 import javafx.scene.input.MouseEvent;
+import javafx.stage.Stage;
 
 import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.common.Vec2;
@@ -18,6 +20,7 @@ import com.sun.javafx.Utils;
 import java.util.ArrayList;
 import java.util.Vector;
 
+import javax.swing.JOptionPane;
 
 public class Utility
 {
@@ -34,6 +37,7 @@ public class Utility
   
   static Group root;
   static Scene scene;
+  static Stage stage;
   
   public static Canvas canvas;
   public static GraphicsContext gc;
@@ -45,8 +49,8 @@ public class Utility
   private static Vector<ClickResponder> clickResponders = new Vector<ClickResponder>();
   public static Vector<TickResponder> tickResponders = new Vector<TickResponder>();
   
-  private static String player1Username;
-  private static String player2Username;
+  public static String player1Username = "";
+  public static String player2Username = "";
   
   private static ArrayList<PhysicalGameObject> pGameObjects1 = new ArrayList<PhysicalGameObject>();
   private static ArrayList<PhysicalGameObject> pGameObjects2 = new ArrayList<PhysicalGameObject>();
