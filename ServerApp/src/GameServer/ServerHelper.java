@@ -121,7 +121,7 @@ public class ServerHelper {
 		
 //------------------------------------------------------------------------------------------------
 	
-	public static Boolean updateUserScore(String username) {
+	public static Boolean updateUserScore(String username, int valueInc) {
 		try {
 			String url = baseurl + "/Scores/";
 			String query = "username=" + 
@@ -139,7 +139,7 @@ public class ServerHelper {
 				String postQuery = "username=" + 
 					     URLEncoder.encode(username, charset);
 				int score = Integer.parseInt(data);
-				score++;
+				score += valueInc;
 				postQuery += "&score=" + 
 					     URLEncoder.encode(Integer.toString(score), charset);
 				

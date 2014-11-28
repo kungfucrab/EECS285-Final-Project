@@ -260,9 +260,12 @@ public class PlayGameState extends GameState implements ClickResponder
         
         if(!updatedScore)
         {
-          //TODO: update tower score
-          //TODO: give player 2 a loss.
-          ServerHelper.updateUserScore(Utility.player1Username);
+        	//give player 2 a loss.
+        	ServerHelper.updateUserScore(Utility.player2Username, -1);
+        	//player 1 win
+         	ServerHelper.updateUserScore(Utility.player1Username, 1);
+         	
+            //TODO: update tower score
         }
       }
       else if(p1EggsLeft == 0)
@@ -271,10 +274,12 @@ public class PlayGameState extends GameState implements ClickResponder
         
         if(!updatedScore)
         {
+          //player 2 win
+          ServerHelper.updateUserScore(Utility.player2Username, 1);
+          //player 1 a loss.
+          ServerHelper.updateUserScore(Utility.player1Username, -1);
           
-          ServerHelper.updateUserScore(Utility.player2Username);
           //TODO: update tower score
-          //TODO: give player 1 a loss.
         }
       }
       
