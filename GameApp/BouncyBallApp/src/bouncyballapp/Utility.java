@@ -255,7 +255,7 @@ public class Utility
         float yCoord = Float.parseFloat(vals[2]);
         int radius = Integer.parseInt(vals[3]);
         
-        pgos.add(new Egg(xCoord, yCoord, radius, playerName));
+        pgos.add(new Egg(xCoord + offset, yCoord, radius, playerName));
       }
       else if(vals[0].equals("C"))
       {
@@ -265,7 +265,7 @@ public class Utility
         int height = Integer.parseInt(vals[4]);
         float angle = Float.parseFloat(vals[5]);
         
-        pgos.add(new Crate(xCoord, yCoord, width, height, angle));
+        pgos.add(new Crate(xCoord + offset, yCoord, width, height, angle));
       }
     }
     
