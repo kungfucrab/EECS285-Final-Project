@@ -29,6 +29,7 @@ public class MenuState extends GameState implements ClickResponder
   Label messageLabel;
   Label player1Label;
   Label player2Label;
+  BorderPane borderPane;
   
   Text displayText;
   
@@ -204,7 +205,7 @@ public class MenuState extends GameState implements ClickResponder
     
     
     // Text Area RIGHT
-    BorderPane borderPane = new BorderPane();
+    borderPane = new BorderPane();
     Text leaderboardText = new Text("LEADERBOARDS\n" + ServerHelper.getLeaderboard());
     borderPane.setRight(leaderboardText);
     borderPane.setPrefSize(600,600);
@@ -258,6 +259,7 @@ public class MenuState extends GameState implements ClickResponder
       
       // Label and text fields.
       Utility.root.getChildren().remove(playerBoxes);
+      Utility.root.getChildren().remove(borderPane);
     }
   }
 }
