@@ -9,7 +9,7 @@ CREATE TABLE towers
 	towername VARCHAR(100) PRIMARY KEY,
 	wins INT,
 	loses INT,
-	towerdata VARCHAR (500)
+	towerdata VARCHAR (2500)
 );
 
 CREATE TABLE tower_user_rel

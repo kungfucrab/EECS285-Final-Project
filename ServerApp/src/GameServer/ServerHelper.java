@@ -193,7 +193,7 @@ public class ServerHelper {
 			String[] parts = data.split(";");
 			
     		dict.put("towername", parts[0]);
-    		dict.put("towerdata", stringToTowerData(parts[3]));
+    		dict.put("towerdata", (parts[3]));
     		dict.put("loses", Integer.parseInt(parts[1]));
     		dict.put("wins", Integer.parseInt(parts[2]));
 		}
@@ -215,7 +215,7 @@ public class ServerHelper {
 			postQuery += "&towername=" + 
 				     URLEncoder.encode(towername, charset);
 			postQuery += "&towerdata=" + 
-				     URLEncoder.encode(towerDataToString(towerDataInput), charset);
+				     URLEncoder.encode(towerDataInput, charset);
 			
 			URLConnection connection = new URL(url + "?" + postQuery).openConnection();
 			connection.setDoOutput(true); // Triggers POST.
@@ -243,17 +243,6 @@ public class ServerHelper {
 		
 
 		return false;
-	}
-
-	
-//------------------------------------------------------------------------------------------------
-
-	private static String stringToTowerData(String string) {
-		return string;
-	}
-	
-	private static String towerDataToString(String string) {
-		return string;
 	}
 	
 //------------------------------------------------------------------------------------------------
