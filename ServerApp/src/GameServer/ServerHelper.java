@@ -192,10 +192,6 @@ public class ServerHelper {
 
 			String[] parts = data.split("@");
 			
-			System.out.println("inside the serer helper");
-			System.out.println(parts[3]);
-			System.out.println("............");
-			
     		dict.put("towername", parts[0]);
     		dict.put("towerdata", (parts[3]));
     		dict.put("loses", Integer.parseInt(parts[1]));
