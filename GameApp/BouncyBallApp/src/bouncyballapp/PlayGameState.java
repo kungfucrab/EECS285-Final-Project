@@ -262,8 +262,10 @@ public class PlayGameState extends GameState implements ClickResponder
         {
         	//give player 2 a loss.
         	ServerHelper.updateUserScore(Utility.player2Username, -1);
+        	ServerHelper.updateTowerLose(Utility.player2TowerName);
         	//player 1 win
          	ServerHelper.updateUserScore(Utility.player1Username, 1);
+         	ServerHelper.updateTowerWin(Utility.player1TowerName);
          	
             //TODO: update tower score
         }
@@ -276,10 +278,10 @@ public class PlayGameState extends GameState implements ClickResponder
         {
           //player 2 win
           ServerHelper.updateUserScore(Utility.player2Username, 1);
+          ServerHelper.updateTowerWin(Utility.player2TowerName);
           //player 1 a loss.
           ServerHelper.updateUserScore(Utility.player1Username, -1);
-          
-          //TODO: update tower score
+          ServerHelper.updateTowerLose(Utility.player1TowerName);
         }
       }
       

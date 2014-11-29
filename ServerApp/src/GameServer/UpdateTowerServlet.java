@@ -22,7 +22,14 @@ public class UpdateTowerServlet extends HttpServlet {
 		PrintWriter out = resp.getWriter();
 		
 		if(towername != null && GetTowerServlet.checkIfTowerExists(towername) && wins != null && loses != null) {
-			String query = "UPDATE towers SET wins=" + wins + ",loses=" + loses + " WHERE towername=\"" + towername + "\";";
+			Dictionary scoreDict = GetTowerServlet.getTowerScore(towername);
+			int currentWins = (int)scoreDict.get("wins");
+			int currentLoses = (int)scoreDict.get("loses");
+			
+			currentWins += Integer.parseInt(wins);
+			currentLoses += Integer.parseInt(loses);
+			
+			String query = "UPDATE towers SET wins=" + currentWins + ",loses=" + currentLoses + " WHERE towername=\"" + towername + "\";";
 			System.out.println(query);
 			Connection conn = null;
 			try {

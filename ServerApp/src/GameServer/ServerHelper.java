@@ -241,7 +241,56 @@ public class ServerHelper {
 			System.out.println(e.toString());
 		}
 		
-
+		return false;
+	}
+//------------------------------------------------------------------------------------------------	
+	public static boolean updateTowerLose(String towername) {
+		return updateTower(towername, "0", "-1");
+	}
+	
+//------------------------------------------------------------------------------------------------	
+	
+	public static boolean updateTowerWin(String towername) {
+		return updateTower(towername, "1", "0");
+	}
+	
+//------------------------------------------------------------------------------------------------	
+//	http://localhost:7777/UpdateTower/?towername=worktower&wins=1&loses=-1
+	private static boolean updateTower(String towername, String wins, String loses) {
+		String url = baseurl + "/UpdateTower/";
+		
+		try {
+			String postQuery = "towername=" + 
+				     URLEncoder.encode(towername, charset);
+			postQuery += "&wins=" + 
+				     URLEncoder.encode(wins, charset);
+			postQuery += "&loses=" + 
+				     URLEncoder.encode(loses, charset);
+			
+			URLConnection connection = new URL(url + "?" + postQuery).openConnection();
+			connection.setDoOutput(true); // Triggers POST.
+			connection.setRequestProperty("Accept-Charset", charset);
+			connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded;charset=" + charset);
+	
+			try (OutputStream output = connection.getOutputStream()) {
+			    output.write(postQuery.getBytes(charset));
+			}
+	
+			InputStream response = connection.getInputStream();
+			String data = getStringFromInputStream(response);
+			System.out.println("result: " + data);
+			if(data.equals("Tower Updated Success")) {
+				return true;
+			}
+			else {
+				System.out.println(data);
+				return false;
+			}
+		}
+		catch(Exception e) {
+			System.out.println(e.toString());
+		}
+		
 		return false;
 	}
 	

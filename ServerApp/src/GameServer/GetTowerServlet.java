@@ -162,4 +162,47 @@ public class GetTowerServlet extends HttpServlet {
 		    }
 	  return false;
 	  }
+	 
+	 static public Dictionary getTowerScore(String data) {
+		  String q = data;
+		    Connection conn = null;
+		    try {
+		    	Class.forName("com.mysql.jdbc.Driver").newInstance();
+		    	conn = DriverManager.getConnection(GameServerMain.server, GameServerMain.serverUsername, GameServerMain.serverPassword);
+
+		    	Statement stmt = null;
+		    	String query = "SELECT wins, loses FROM towers WHERE towername = \"" + q + "\";";
+		    	
+		    	try {
+		    		int wins = 0;
+		    		int loses = 0;
+		    		stmt = conn.createStatement();
+		    		ResultSet rs = stmt.executeQuery(query);
+		    		while(rs.next()) {
+		    			wins = rs.getInt(1);
+		    			loses = rs.getInt(2);
+		    		}
+		    		
+		    		Dictionary dict = new Hashtable();
+		    		dict.put("wins", wins);
+		    		dict.put("loses", loses);
+		    		return dict;
+		    	}
+		    	catch (SQLException e ) {
+		    		System.out.println(e.toString());
+		    	} 
+		    	finally {
+		    		if (stmt != null) { stmt.close(); }
+		    	}
+
+		    	conn.close();
+		    }
+		    catch (SQLException ex) {
+		    	System.out.println(ex.toString());
+		    }
+		    catch (Exception e) {
+		    	System.out.println(e.toString());
+		    }
+	  return null;
+	  }
 }

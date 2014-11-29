@@ -94,7 +94,7 @@ public class MenuState extends GameState implements ClickResponder
   { 
     public UserTowersChoice()
     {
-      text = new BouncyText("View Towers", 25, 200, 20);
+      text = new BouncyText("View Player 1 Towers", 25, 200, 20);
     }
     
     public void onClick()
@@ -102,10 +102,33 @@ public class MenuState extends GameState implements ClickResponder
       if(highlighted)
       {
         if(!Utility.player1Username.isEmpty())
-          displayText.setText(ServerHelper.getUserTowers(Utility.player1Username));
+          displayText.setText("TowerName Wins Loses \n" + ServerHelper.getUserTowers(Utility.player1Username));
         else
         {
           messageLabel.setText("Please specify Player 1's username!");
+          messageLabel.setTextFill(Color.RED);
+          messageLabel.setFont(new Font("Arial", 30));
+        }
+      }
+    }
+  }
+  
+  public class UserTowersChoice2 extends MenuChoice
+  { 
+    public UserTowersChoice2()
+    {
+      text = new BouncyText("View Player 2 Towers", 25, 250, 20);
+    }
+    
+    public void onClick()
+    {
+      if(highlighted)
+      {
+        if(!Utility.player2Username.isEmpty())
+          displayText.setText("TowerName Wins Loses \n" + ServerHelper.getUserTowers(Utility.player2Username));
+        else
+        {
+          messageLabel.setText("Please specify Player 2's username!");
           messageLabel.setTextFill(Color.RED);
           messageLabel.setFont(new Font("Arial", 30));
         }
@@ -130,7 +153,7 @@ public class MenuState extends GameState implements ClickResponder
   {
     public CreditsMenuChoice()
     {
-      text = new BouncyText("Credits", 25, 250, 20);
+      text = new BouncyText("Credits", 25, 300, 20);
     }
     
     public void onClick()
@@ -148,7 +171,7 @@ public class MenuState extends GameState implements ClickResponder
   { 
     public QuitMenuChoice()
     {
-      text = new BouncyText("Quit", 25, 300, 20);
+      text = new BouncyText("Quit", 25, 350, 20);
     }
     
     public void onClick()
@@ -172,6 +195,7 @@ public class MenuState extends GameState implements ClickResponder
       choices.put(3, new UserTowersChoice());
       choices.put(5, new CreditsMenuChoice());
       choices.put(6, new QuitMenuChoice());
+      choices.put(7, new UserTowersChoice2());
     }
     Utility.RegisterForClicks(this);
     
