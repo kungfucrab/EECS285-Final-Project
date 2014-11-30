@@ -18,6 +18,7 @@ import javafx.scene.ParallelCamera;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.image.Image;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
@@ -42,16 +43,22 @@ public class BouncyBallApp extends Application {
   @Override
   public void start(Stage primaryStage) {
     
-    Utility.root = new Group();
-    Utility.scene = new Scene(Utility.root, Utility.WIDTH, Utility.HEIGHT);
-    Utility.stage = primaryStage;
+    Utility.graphPaperImage = new Image(getClass().getResourceAsStream("graph_paper_bg.jpg"));
     
-    //Utility.scene.setCamera(camera);
+    Utility.root = new Group();
+    Utility.scene = new Scene(Utility.root, Utility.WIDTH * 3, Utility.HEIGHT);
+    Utility.stage = primaryStage;
+    primaryStage.centerOnScreen();
+    primaryStage.setWidth(Utility.WIDTH);
+    primaryStage.setHeight(Utility.HEIGHT);
+    Camera camera = new ParallelCamera();
+    
+    Utility.scene.setCamera(camera);
     //Group cameraGroup = new Group();
     //cameraGroup.getChildren().add(camera);
     //Utility.root.getChildren().add(cameraGroup);
     
-    Utility.canvas = new Canvas(Utility.WIDTH, Utility.HEIGHT);
+    Utility.canvas = new Canvas(Utility.WIDTH * 5, Utility.HEIGHT);
     Utility.gc = Utility.canvas.getGraphicsContext2D();
     
     Utility.root.getChildren().add(Utility.canvas);
@@ -73,8 +80,10 @@ public class BouncyBallApp extends Application {
           @Override
           public void handle(Event arg0)
           {
-            Utility.gc.clearRect(0, 0, Utility.WIDTH, Utility.HEIGHT);
-            
+            Utility.gc.clearRect(0, 0, Utility.WIDTH * 5, Utility.HEIGHT);
+            Utility.gc.drawImage(Utility.graphPaperImage, 0, 0); 
+            Utility.gc.drawImage(Utility.graphPaperImage, 4968, 0);
+            Utility.gc.drawImage(Utility.graphPaperImage, 2 * 4968, 0);
             Utility.gameState.update();
             SpecialText.updateSystem();
           }

@@ -6,6 +6,7 @@ import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.geometry.Point2D;
+import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 
@@ -41,6 +42,7 @@ public class Utility
   public static double LAVA_AMPLITUDE = 2;
   public static double lava_animation_frame = 0; // Lava Animation
   
+  static Image graphPaperImage;
   
   static Group root;
   static Scene scene;

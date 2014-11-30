@@ -1,6 +1,7 @@
 package bouncyballapp;
 
 import java.util.ArrayList;
+import java.util.Dictionary;
 
 import org.jbox2d.dynamics.BodyType;
 
@@ -32,8 +33,6 @@ public class TowerCreateState extends GameState implements ClickResponder
   
   float mouseX = Utility.WIDTH/2;
   float mouseY = Utility.HEIGHT/2;
-  
-  
   
   Text text = new Text(20, 40, "JavaFX Scene");
   Font font = new Font(20);
@@ -198,7 +197,7 @@ public class TowerCreateState extends GameState implements ClickResponder
           
           acceptClicks = true;
         }
-        else if(t.getCode() == KeyCode.G)
+        else if(t.getCode() == KeyCode.G && !towerGenerateFlag)
         {
           towerGenerateFlag = true;
         }
@@ -221,7 +220,7 @@ public class TowerCreateState extends GameState implements ClickResponder
         
         pGameObjects.add(newPGObject);
         
-        eggsPlaced++;;
+        eggsPlaced++;
         
         if(eggsPlaced >= MAX_EGGS)
         {
@@ -278,8 +277,11 @@ public class TowerCreateState extends GameState implements ClickResponder
     {
     //API CALL TO GET TOWER HERE
       String towerString = "C 22.769838 7.7074504 20 100 -9.028581E-5;C 38.923405 7.7073054 20 100 -3.8586637E-5;C 55.076233 7.707002 20 100 -3.519192E-5;C 71.23118 7.707309 20 100 5.320216E-5;C 63.231606 16.953136 100 20 1.4909657E-4;C 47.23332 16.952799 100 20 -1.3709241E-4;C 31.077705 16.953136 100 20 -4.1015745E-5;C 31.539476 26.19938 20 100 -3.220857E-4;C 63.54037 26.199657 20 100 -7.962991E-5;C 47.542023 26.198494 20 100 -1.4919715E-4;C 39.536453 35.444996 100 20 -4.126221E-5;C 56.00377 35.445057 100 20 1.6112691E-4;C 28.15738 26.203596 20 100 -2.0291282E-5;C 66.92998 26.201353 20 100 -4.7083333E-4;C 56.005135 44.69095 20 100 2.0222797E-4;C 40.00231 44.691532 20 100 -5.2561506E-4;C 47.6947 53.937187 100 20 -4.317683E-5;C 59.23504 44.69387 20 100 -9.8591474E-5;C 36.618286 44.692383 20 100 -7.2669337E-4;C 47.390823 57.029087 100 20 -6.051278E-5;E 48.614384 40.73768 25;E 38.770428 22.246534 25;E 55.22985 22.231611 25;";
+      String towerName = "default_tower";
       try {
-    	towerString = (String) ServerHelper.getBestTower().get("towerdata");
+        Dictionary<String, Object> incomingTowerData = ServerHelper.getBestTower();
+        towerString = (String) incomingTowerData.get("towerdata");
+        towerName = (String) incomingTowerData.get("towername");
       }
       catch (Exception e) {
     	  //if API call fails, use default tower
@@ -310,10 +312,27 @@ public class TowerCreateState extends GameState implements ClickResponder
         {
           eggsPlaced++;
         }
-        
       }
       
+      destroyMouse();
+      Utility.UnregisterForClicks(this);
+      
+      preCleanUp();
+      
       towerGenerateFlag = false;
+      
+      if(playerNum == 1)
+      {
+        Utility.player1TowerName = towerName;
+        Utility.transitionGameState(new TowerCreateState(2));
+      }
+      else if(playerNum == 2)
+      {
+        Utility.player2TowerName = towerName;
+        Utility.transitionGameState(new PlayGameState());
+      }
+      
+      return;
     }
    
     //Create time step. Set Iteration count 8 for velocity and 3 for positions
@@ -430,6 +449,8 @@ public class TowerCreateState extends GameState implements ClickResponder
           borderPane.setPrefSize(600, 600);
           borderPane.setCenter(verticalBox);
           
+          borderPane.setLayoutX(camX);
+          
           Utility.root.getChildren().add(borderPane);
           enteringTowerName = true;
         }
@@ -494,7 +515,10 @@ public class TowerCreateState extends GameState implements ClickResponder
   }
   
   @Override
-  void cleanUp(){}
+  void cleanUp()
+  {  
+    Utility.root.getChildren().remove(verticalBox);
+  }
   
   public static int getOffset(int playerNum)
   {
