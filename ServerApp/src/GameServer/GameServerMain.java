@@ -9,9 +9,11 @@ import org.eclipse.jetty.servlet.ServletHolder;
 
 public class GameServerMain
 {
-	static public String server = "jdbc:mysql://localhost/eecs285";
-	static public String serverUsername = "root";
-	static public String serverPassword = ""; // To kill, use ps -ef | grep jetty (second in).
+	//static public String server = "jdbc:mysql://localhost/eecs285";
+  static public String server = "jdbc:mysql://localhost/eecs285";
+	static public String serverUsername = "eecs285";
+	static public String serverPassword = "amorgan"; // To kill, use ps -ef | grep jetty (second in).
+	
 	
   static public void main(String[] args) throws Exception
   {

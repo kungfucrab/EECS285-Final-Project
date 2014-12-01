@@ -13,7 +13,7 @@ import java.util.Hashtable;
 
 
 public class ServerHelper {
-	private static String baseurl = "http://localhost:7777";
+	private static String baseurl = "http://www.ayarger.com:7777";
 	private static String charset = "UTF-8";
 	
 	//check is user already exists, if not it will create an account for the new username

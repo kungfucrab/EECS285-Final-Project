@@ -63,7 +63,7 @@ public class BouncyBallApp extends Application {
     
     Utility.root.getChildren().add(Utility.canvas);
     
-    primaryStage.setTitle("Bouncy Ball");
+    primaryStage.setTitle("TOWER TOPPLE");
     primaryStage.setFullScreen(false);
     primaryStage.setResizable(false);
     

@@ -72,7 +72,7 @@ public class MenuState extends GameState implements ClickResponder
     {
       if(highlighted)
       {
-        if(!Utility.player1Username.isEmpty())
+        if(!Utility.player1Username.isEmpty() && !Utility.player2Username.isEmpty())
         {
           ServerHelper.userLogin(Utility.player1Username);
           if(!Utility.player2Username.isEmpty())
@@ -82,7 +82,7 @@ public class MenuState extends GameState implements ClickResponder
         }
         else
         {
-          messageLabel.setText("Please specify Player 1's username!");
+          messageLabel.setText("Please specify 2 usernames!");
           messageLabel.setTextFill(Color.RED);
           messageLabel.setFont(new Font("Arial", 30));
         }
@@ -114,7 +114,7 @@ public class MenuState extends GameState implements ClickResponder
   }
   
   public class UserTowersChoice2 extends MenuChoice
-  { 
+  {
     public UserTowersChoice2()
     {
       text = new BouncyText("View Player 2 Towers", 25, 250, 20);
@@ -161,7 +161,7 @@ public class MenuState extends GameState implements ClickResponder
       if(highlighted)
       {
         String creditsMessage = "Developed by\nSebastian Martinez,\nTomas Medina Inchauste,"
-            + "\nThomas Seidel,\nand Austin Yarger. \nDeveloped for EECS 285, F14, University of Michigan, Ann Arbor.";
+            + "\nThomas Seidel,\nand Austin Yarger. \for EECS 285, F14, University of Michigan, Ann Arbor.\nTaught by Andrew Morgan.";
         displayText.setText(creditsMessage);
       }
     }
@@ -202,7 +202,7 @@ public class MenuState extends GameState implements ClickResponder
     // Username Entry.
     player1Label = new Label("Player 1 Username:");
     player2Label = new Label("Player 2 Username:");
-    messageLabel = new Label("Please enter a username. Enter 2 names to play multiplayer!");
+    messageLabel = new Label("");
     TextField player1TextField = new TextField ();
     TextField player2TextField = new TextField ();
     HBox hbPlayer1 = new HBox();
@@ -220,11 +220,11 @@ public class MenuState extends GameState implements ClickResponder
     // Update the stored usernames as users type.
     player1TextField.textProperty().addListener((observable, oldValue, newValue) -> {
       Utility.player1Username = newValue;
-      messageLabel.setText("Please enter a username. Enter 2 names to play multiplayer!");
+      messageLabel.setText("");
     });
     player2TextField.textProperty().addListener((observable, oldValue, newValue) -> {
       Utility.player2Username = newValue;
-      messageLabel.setText("Please enter a username. Enter 2 names to play multiplayer!");
+      messageLabel.setText("");
     });
     
     

@@ -219,6 +219,8 @@ public class Utility
   
   public static String getTowerString(ArrayList<PhysicalGameObject> pgos, int offset)
   {
+    
+    
     String out = "";
     for(PhysicalGameObject pgo : pgos)
     {
@@ -246,7 +248,7 @@ public class Utility
     String[] gameObjectStrings = (towerString.split(";"));
     
     //ArrayList<PhysicalGameObject> pgos = new ArrayList<PhysicalGameObject>();
-    
+    System.out.println("PARSING TOWER: " + towerString);
     
     for(String s : gameObjectStrings)
     {
